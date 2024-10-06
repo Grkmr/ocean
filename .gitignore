@@ -3,6 +3,7 @@
 # drawio
 *.drawio.bkp
 *.dtmp
+submission-info.md
 
 # ----------------------------------------------------------------------
 # python .gitignore template
