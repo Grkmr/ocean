@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from api.logger import logger
+logger.info("Launching OCEAn backend ...")
+
 import datetime
 import shutil
 from pathlib import Path
@@ -14,7 +17,6 @@ from api.config import OceanConfig, config
 from api.dependencies import ApiObjectType, ApiObjectTypes, ApiOcel, ApiSession, ApiTask
 from api.docs import init_custom_docs
 from api.exceptions import BadRequest, NotFound, Unauthorized
-from api.logger import logger
 from api.middleware import ocel_access_middleware
 from api.model.app_state import AppState, ObjectAllocationConfig
 from api.model.base import RequestBody, SerializableSeries

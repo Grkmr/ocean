@@ -9,10 +9,10 @@ import emissions.allocation_graph as ag
 import emissions.allocation_rules as ar
 import numpy as np
 import pandas as pd
-import pandas.io.formats.style as pd_style
 import util.misc as util
 import util.pandas as pd_util
 from emissions import allocation
+from pandas.io.formats.style import Styler
 
 import data.evaluation.src.result_export as export
 
@@ -427,7 +427,7 @@ def seconds_formatter(t: float, prec: int = 0, format: Literal[":", "m-s"] = "m-
 
 
 def style_stats(
-    x: pd.DataFrame | pd_style.Styler,
+    x: pd.DataFrame | Styler,
     columns: pd.MultiIndex | None = None,
     latex: bool = False,
 ):  # type: ignore

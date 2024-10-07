@@ -1,5 +1,7 @@
 """To be imported in jupyter notebooks.
-Assumes src/backend has been added to PATH (sys.path), or it is the current working directory."""
+Assumes
+- current directory is /src/backend
+- repo root has been added to PATH (sys.path)"""
 
 import collections
 import itertools
@@ -44,5 +46,6 @@ from ocel.attribute import *
 from ocel.ocel_wrapper import *
 from visualization.constants import *
 
+import data.evaluation.src.pandas_style as pd_style
 import data.evaluation.src.result_export as export
 from data.evaluation.src.jupyter_utils.logger import logger

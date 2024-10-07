@@ -135,8 +135,6 @@ class EmissionFactorBase(ABC, ModelWithOcel):
         """String representation of a quantity as emission factor.
         Automatically detects a weight unit and outputs it like '3 g/km' -> '3 gCO2e / km"""
 
-        print("co2e_str of", value)
-
         # Infer CO2e weight unit from factor
         if value._units["kilogram"] > 0:
             co2e_unit = ureg.kilogram

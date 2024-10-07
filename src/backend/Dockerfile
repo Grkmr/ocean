@@ -18,6 +18,10 @@ RUN poetry install --no-dev
 
 # Copy application code
 COPY . .
+
+# Copy data directory
+COPY 
+
 RUN mkdir -p tmp
 
 # Optionally, adjust PYTHONPATH to ensure imports work as expected

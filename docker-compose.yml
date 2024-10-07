@@ -1,3 +1,4 @@
+name: ocean
 version: '0.9.9'
 services:
   frontend:
