@@ -135,7 +135,7 @@ const AttributeMultiSelection = ({
       }}
       value={[
         ...items.filter(it => it.attributeSource && selectedStringified?.includes(JSON.stringify(it.attributeSource))),
-        ...((includeNoneOption && (selected?.length == 0 ?? true)) ? [noneItem] : [])
+        ...((includeNoneOption && !!selected?.length) ? [noneItem] : [])
       ]}
       placeholder={placeholder ?? "Attribute"}
       isClearable={isClearable}

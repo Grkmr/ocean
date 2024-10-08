@@ -49,7 +49,7 @@ export function isEmissionFactorEmpty(factor: EditingEmissionFactor | undefined)
   if (factor.source == "climatiq")
     return !factor.data?.id
   if (factor.source == "local")
-    return factor.value?.value == 0 ?? true
+    return !factor.value || factor.value.value == 0
   throw Error()
 }
 

@@ -82,7 +82,8 @@ export const AggProgressBar: React.FC<ProgressBarStyleProps & {
 
   const now = self[aggMode.key]
   const allValues = _.map(all, aggMode.key)
-  const min = Math.min(...allValues)
+  // const min = Math.min(...allValues)
+  const min = Math.min(0, ...allValues)
   const max = Math.max(...allValues)
   console.log(`${now} -- [${min}, ${max}]`)
   if (aggMode.key == "nonzero") percent = true

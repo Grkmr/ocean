@@ -20,7 +20,7 @@ RUN poetry install --no-dev
 COPY . .
 
 # Copy data directory
-COPY 
+# COPY 
 
 RUN mkdir -p tmp
 

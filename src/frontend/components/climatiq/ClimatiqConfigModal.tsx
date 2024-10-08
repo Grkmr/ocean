@@ -1,9 +1,8 @@
-import { useOceanStore } from "@/src/zustand"
-import { Dispatch, SetStateAction, useRef, useState } from "react"
-import { Button, Col, Form, Modal, Row } from "react-bootstrap"
-import Image, { ImageProps } from "next/image"
 import { ClimatiqConfig, climatiqDataVersionRequest, validateClimatiqApiKey } from "@/src/climatiq.types"
-import { useComputedStyle } from "@/src/util"
+import { useOceanStore } from "@/src/zustand"
+import Image, { ImageProps } from "next/image"
+import { useState } from "react"
+import { Button, Col, Form, Modal, Row } from "react-bootstrap"
 
 
 export type ClimatiqSettingsModalProps = {

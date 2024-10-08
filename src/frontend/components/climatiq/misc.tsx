@@ -15,7 +15,7 @@ import styled from "styled-components"
  * A horizontal stack of region icons (flags / earth icons) overlapping by 50%.
  */
 export const RegionIconStack = styled(({ size, overlap, children, ...props }: HTMLProps<HTMLDivElement> & { size: number, overlap?: number }) => {
-  
+
   return (
     <div {...props}>
       {Children.toArray(children).filter(child => child).map((child, i) => (
@@ -130,7 +130,16 @@ type ValueSetProps = HTMLProps<HTMLDivElement> & {
  * Regions are shown as an icon stack.
  * Depending on the climatiqResponse, it is determined whether the list is exhaustive.
  */
-export const ValueSet = styled(({ filterKey, values, complete = false, climatiqResponse, paragraphs = false, regionIconSize = 20, ...props }: ValueSetProps) => {
+export const ValueSet = styled(({
+  filterKey,
+  values,
+  complete = false,
+  climatiqResponse,
+  paragraphs = false,
+  regionIconSize = 20,
+  ref,
+  ...props
+}: ValueSetProps) => {
 
   // If there is only one result page, the value list is complete
   complete = complete || climatiqResponse?.lastPage == 1
