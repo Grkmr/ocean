@@ -477,10 +477,14 @@ def import_ocel(
 
     try:
         with NamedTemporaryFile(
-            delete=False, prefix=tmp_file_prefix, suffix=file_name_path.suffix
+            delete=False,
+            prefix=tmp_file_prefix,
+            suffix=file_name_path.suffix,
         ) as tmp:
             shutil.copyfileobj(file.file, tmp)
             tmp_path = Path(tmp.name)
+    except Exception as err:
+        raise err
     finally:
         file.file.close()
 
@@ -511,8 +515,6 @@ def import_ocel(
             imported_emissions,
             unit=KG_CO2E,  # type: ignore
         )
-        
-    print(session.emission_model.emissions)
 
     return OcelResponse(
         **session.respond(
@@ -662,8 +664,14 @@ def download_ocel(
                 raise ValueError(f'Event attribute name "{attr_name}" already taken.')
             # Remove object emissions if contained in OCEL
             if attr_name in ocel.objects.columns:
-                logger.warning(f'Dropping object attribute "{attr_name}".')
+                logger.warning(f'Dropping static object attribute "{attr_name}".')
                 ocel.objects.drop(columns=[attr_name], inplace=True)
+                ocel.ocel.objects = ocel.objects
+            if attr_name in ocel.objects.columns:
+                logger.warning(f'Dropping dynamic object attribute "{attr_name}".')
+                ocel.object_changes.drop(columns=[attr_name], inplace=True)
+                # TODO additionally, might need to drop all ROWS where "ocel:field" == attr_name
+                ocel.ocel.object_changes = ocel.object_changes
             # Add event emissions
             ocel.events = ocel.ocel.events = ocel.events.join(
                 event_emissions.set_index("ocel:eid")[EMISSIONS_KG_NAME].rename(attr_name),
@@ -695,6 +703,7 @@ def download_ocel(
             if attr_name in ocel.events.columns:
                 logger.warning(f'Dropping event attribute "{attr_name}".')
                 ocel.events.drop(columns=[attr_name], inplace=True)
+                ocel.ocel.events = ocel.events
             # Add object emissions
             ocel.objects = ocel.ocel.objects = ocel.objects.join(
                 object_emissions.rename(attr_name),

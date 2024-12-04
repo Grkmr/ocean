@@ -59,7 +59,7 @@ const Navbar: React.FC<{
       if (!ocel || !session || !apiState) return false
       setLoadingText("Preparing download")
       const params = emissionDownloadMode ? `?emissions=${emissionDownloadMode}` : ""
-      const res = await fetch(`http://127.0.0.1:8000/download${params}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/download${params}`, {
         headers: {
           "Ocean-Session-Id": session,
           "token": apiState

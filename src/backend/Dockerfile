@@ -8,7 +8,7 @@ WORKDIR /app
 RUN pip install poetry
 
 # Copy pyproject.toml and poetry.lock (if available)
-COPY pyproject.toml poetry.lock* /app/
+COPY src/backend/pyproject.toml src/backend/poetry.lock* /app/
 
 # Disable virtual environment as Docker container provides isolation
 RUN poetry config virtualenvs.create false
@@ -17,10 +17,10 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev
 
 # Copy application code
-COPY . .
+COPY src/backend .
 
 # Copy data directory
-# COPY 
+COPY ./data ./data
 
 RUN mkdir -p tmp
 

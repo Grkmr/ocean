@@ -42,7 +42,7 @@ class OceanConfig(BaseSettings):
 
     CURRENCY_EXCHANGE_DATE: str = Field(
         default="20241005",
-        description="Reference date for currency exchange rates, determines what pint context to use.\nThe rates can be updated, and a new context generated, using the notebook at `drafts/currency.ipynb`.",
+        description="Reference date for currency exchange rates, determines what pint context to use.\nThe rates can be updated, and a new context generated, using the notebook at `data/units/currency_exchange_rates.ipynb`.",
         pattern=r"^\d{8}$",
     )
 
