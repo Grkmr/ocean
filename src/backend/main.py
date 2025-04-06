@@ -1,5 +1,4 @@
 import uvicorn
-import uvicorn.config
 
 from api.logger import LOGGER_CONFIG
 

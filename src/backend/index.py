@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from api.logger import logger
-logger.info("Launching OCEAn backend ...")
 
 import datetime
 import shutil
@@ -12,6 +11,7 @@ from typing import Annotated, Literal
 import emissions.allocation_graph as ag
 import emissions.allocation_rules as ar
 import pandas as pd
+from routes import editor
 import visualization.ocpn as viz_ocpn
 from api.config import OceanConfig, config
 from api.dependencies import ApiObjectType, ApiObjectTypes, ApiOcel, ApiSession, ApiTask
@@ -96,7 +96,7 @@ app.middleware("http")(ocel_access_middleware)
 app.exception_handler(Exception)(error_handler_server)
 init_custom_docs(app)
 
-
+app.include_router(editor.router)
 # ----- TASK MANAGEMENT ------------------------------------------------------------------------------------------
 # region
 
@@ -107,7 +107,9 @@ def task_status(
     task: ApiTask,
 ) -> TaskStatusResponse:
     """Return the status of a long-running task."""
-    return TaskStatusResponse(**session.respond(route="task-status", msg=None, task=task))
+    return TaskStatusResponse(
+        **session.respond(route="task-status", msg=None, task=task)
+    )
 
 
 # endregion
@@ -125,7 +127,8 @@ class ValidateEmissionRuleResponse(BaseResponse):
 
 
 @app.post(
-    "/validate-emission-rule", summary="Validates an emission rule and computes a display name"
+    "/validate-emission-rule",
+    summary="Validates an emission rule and computes a display name",
 )
 def validate_emission_rule(
     session: ApiSession,
@@ -197,19 +200,25 @@ def get_available_attributes_for_emission_rule(
     else:
         raise TypeError
 
-    eattrs = [session.app_state.get_attribute_definition(ea) for ea in rule.available_eattrs()]
+    eattrs = [
+        session.app_state.get_attribute_definition(ea) for ea in rule.available_eattrs()
+    ]
     eattrs = [ea for ea in eattrs if ea is not None]
     oattrs = [
         (ot, q, session.app_state.get_attribute_definition(oa))
-        for ot, q, oa in rule.directly_available_oattrs() + rule.uniquely_available_oattrs()
+        for ot, q, oa in rule.directly_available_oattrs()
+        + rule.uniquely_available_oattrs()
     ]
     # Remove qualified oattrs if the non-qualified version is available
     # (Only here - in rule validation, both is allowed, that's why both are returned in the lists)
-    non_qualified_oattr_names = [(ot, oa.name) for ot, q, oa in oattrs if q is None and oa]
+    non_qualified_oattr_names = [
+        (ot, oa.name) for ot, q, oa in oattrs if q is None and oa
+    ]
     oattrs = [
         (ot, q, oa)
         for ot, q, oa in oattrs
-        if oa is not None and not (q is not None and (ot, oa.name) in non_qualified_oattr_names)
+        if oa is not None
+        and not (q is not None and (ot, oa.name) in non_qualified_oattr_names)
     ]
 
     # Additional filters
@@ -270,7 +279,9 @@ class WeightedDirectedGraphResponse(BaseResponse):
     graph: dict[str, dict[str, int]]
 
     @staticmethod
-    def graph_from_tuples(edges: dict[tuple[str, str], int]) -> dict[str, dict[str, int]]:
+    def graph_from_tuples(
+        edges: dict[tuple[str, str], int],
+    ) -> dict[str, dict[str, int]]:
         res = {}
         for (u, v), i in edges.items():
             if u not in res:
@@ -298,7 +309,6 @@ def discover_dfg(
     ocel: ApiOcel,
     req: ObjectTypeRequestBody,
 ) -> WeightedDirectedGraphResponse:
-
     dfg = ocel.directly_follows_graph(otype=req.object_type)
 
     return WeightedDirectedGraphResponse(
@@ -316,7 +326,6 @@ def discover_efg(
     ocel: ApiOcel,
     req: ObjectTypeRequestBody,
 ) -> DirectedGraphResponse:
-
     efg = ocel.eventually_follows_graph(otype=req.object_type)
 
     return DirectedGraphResponse(
@@ -342,12 +351,15 @@ def ocpn(
     ocel: ApiOcel,
     req: OcpnRequestBody,
 ) -> OcpnResponse:
-
     ocpn = ocel.ocpn(otypes=req.object_types)  # type: ignore
 
     # TODO minimize/rename the function, it does not do visualization any more
     ocpn = viz_ocpn.visualize(
-        ocpn, parameters={viz_ocpn.Parameters.UUIDS: False, viz_ocpn.Parameters.RANKDIR: "LR"}
+        ocpn,
+        parameters={
+            viz_ocpn.Parameters.UUIDS: False,
+            viz_ocpn.Parameters.RANKDIR: "LR",
+        },
     )
 
     return OcpnResponse(
@@ -381,7 +393,6 @@ def object_allocation(
     ocel: ApiOcel,
     req: ObjectAllocationRequestBody,
 ) -> ObjectAllocationResponse:
-
     em = session.emission_model
     if em is None or em.emissions is None:
         raise BadRequest(
@@ -409,9 +420,13 @@ def object_allocation(
 
             return ar.ClosestTargetsAllocation(
                 alloc,
-                graph_mode=ag.GraphMode.OBJ_OBJ if cnf.graph_mode == "full" else ag.GraphMode.HU_HU,
+                graph_mode=ag.GraphMode.OBJ_OBJ
+                if cnf.graph_mode == "full"
+                else ag.GraphMode.HU_HU,
                 remove_otype_loops=(
-                    cnf.remove_otype_loops if cnf.remove_otype_loops is not None else False
+                    cnf.remove_otype_loops
+                    if cnf.remove_otype_loops is not None
+                    else False
                 ),
                 max_distance=max_distance,
             )
@@ -460,7 +475,9 @@ def import_ocel(
     ],
     name: Annotated[
         str,
-        Query(description="The name of the uploaded file", pattern=r"[\w\-\(\)]+\.[a-z]+"),
+        Query(
+            description="The name of the uploaded file", pattern=r"[\w\-\(\)]+\.[a-z]+"
+        ),
         # Need original file name because client-side formData creation in generated api wrapper does not retain it
     ],
 ) -> OcelResponse:
@@ -538,7 +555,6 @@ def import_default_ocel(
         examples=["1.0"],
     ),
 ) -> OcelResponse:
-
     default_ocel = get_default_ocel(key=key, version=version)
     if default_ocel is None:
         raise NotFound("The given default OCEL was not found")
@@ -554,7 +570,9 @@ def import_default_ocel(
             AppState.instantiate(default_ocel.default_app_state, ocel=ocel)
         except ValidationError as err:
             # When attribute units are saved to the JSON file with a renamed name (after unit detection), these will cause a Validation error here.
-            is_attr_not_found = ["attribute not found" in e["msg"] for e in err.errors()]
+            is_attr_not_found = [
+                "attribute not found" in e["msg"] for e in err.errors()
+            ]
             if not all(is_attr_not_found):
                 raise err
 
@@ -642,9 +660,13 @@ def download_ocel(
     if emissions is not False:
         em = session.emission_model
         if em is None:
-            raise BadRequest("No emission model available. Try first adding an emission rule.")
+            raise BadRequest(
+                "No emission model available. Try first adding an emission rule."
+            )
         if em.emissions is None:
-            raise BadRequest("No emissions available. Try adding and executing an emission rule.")
+            raise BadRequest(
+                "No emissions available. Try adding and executing an emission rule."
+            )
 
         event_emissions = em.emissions.total_event_emissions
         object_emissions = em.emissions.object_emissions
@@ -674,7 +696,9 @@ def download_ocel(
                 ocel.ocel.object_changes = ocel.object_changes
             # Add event emissions
             ocel.events = ocel.ocel.events = ocel.events.join(
-                event_emissions.set_index("ocel:eid")[EMISSIONS_KG_NAME].rename(attr_name),
+                event_emissions.set_index("ocel:eid")[EMISSIONS_KG_NAME].rename(
+                    attr_name
+                ),
                 on="ocel:eid",
             )
             # Clear attribute information cache
@@ -682,10 +706,18 @@ def download_ocel(
 
             # Add emissions unit to AppState
             activities = sorted(
-                set(event_emissions[event_emissions[EMISSIONS_KG_NAME].notna()]["ocel:activity"])
+                set(
+                    event_emissions[event_emissions[EMISSIONS_KG_NAME].notna()][
+                        "ocel:activity"
+                    ]
+                )
             )
-            attrs = [ocel.find_attribute(activity=act, name=attr_name) for act in activities]
-            defs = [attr.to_definition(unit=em.emissions.unit) for attr in attrs if attr]
+            attrs = [
+                ocel.find_attribute(activity=act, name=attr_name) for act in activities
+            ]
+            defs = [
+                attr.to_definition(unit=em.emissions.unit) for attr in attrs if attr
+            ]
             if session.app_state.attribute_units is None:
                 session.app_state.attribute_units = []
             session.app_state.attribute_units += defs
@@ -693,11 +725,15 @@ def download_ocel(
         # Include object emissions as object attribute
         if emissions == "objects":
             if object_emissions is None:
-                raise BadRequest("No object emissions available. Try executing object allocation.")
+                raise BadRequest(
+                    "No object emissions available. Try executing object allocation."
+                )
             logger.info(
                 f"exporting object emissions ({em.emissions.overall_emissions * em.emissions.unit} total)"
             )
-            if attr_name in set(ocel.objects.columns).union(ocel.object_changes.columns):
+            if attr_name in set(ocel.objects.columns).union(
+                ocel.object_changes.columns
+            ):
                 raise ValueError(f'Object attribute name "{attr_name}" already taken.')
             # Remove event emissions if contained in OCEL
             if attr_name in ocel.events.columns:
@@ -714,9 +750,13 @@ def download_ocel(
             OCELAttribute.reset_attributes_cache(ocel)
 
             # Add emissions unit to AppState
-            otypes = sorted(set(ocel.objects[ocel.objects[attr_name].notna()]["ocel:type"]))
+            otypes = sorted(
+                set(ocel.objects[ocel.objects[attr_name].notna()]["ocel:type"])
+            )
             attrs = [ocel.find_attribute(otype=ot, name=attr_name) for ot in otypes]
-            defs = [attr.to_definition(unit=em.emissions.unit) for attr in attrs if attr]
+            defs = [
+                attr.to_definition(unit=em.emissions.unit) for attr in attrs if attr
+            ]
             if session.app_state.attribute_units is None:
                 session.app_state.attribute_units = []
             session.app_state.attribute_units += defs
@@ -731,7 +771,9 @@ def download_ocel(
     # Export to file
     name = ocel.meta["fileName"]
     tmp_file_prefix = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + name
-    file_response = TempFileResponse(prefix=tmp_file_prefix, suffix=".sqlite", filename=name)
+    file_response = TempFileResponse(
+        prefix=tmp_file_prefix, suffix=".sqlite", filename=name
+    )
     session.export_sqlite(file_response.tmp_path)
     return file_response
 
@@ -805,7 +847,9 @@ def update_state(
         if attrs == prev_state.emission_attributes:
             logger.info(f"emission_attributes did not change, skipping ...")
         else:
-            imported_emissions, input_eattrs = extract_imported_emissions(attrs, session)
+            imported_emissions, input_eattrs = extract_imported_emissions(
+                attrs, session
+            )
             if imported_emissions is not None and input_eattrs:
                 emissions = session.emission_model.set_imported_emissions(
                     imported_emissions,
@@ -814,7 +858,7 @@ def update_state(
                 return UpdateAppStateResponse(
                     **session.respond(
                         route="update",
-                        msg=f'Emissions have been imported from {pluralize(len(input_eattrs), pl="attributes")}.',
+                        msg=f"Emissions have been imported from {pluralize(len(input_eattrs), pl='attributes')}.",
                         emissions=emissions,
                     )
                 )
@@ -836,7 +880,7 @@ def extract_imported_emissions(
     ocel = session.ocel
     if not attrs:
         return None, []
-    
+
     # Make sure all attrs are weights
     if not all(is_weight(attr.unit) for attr in attrs):
         raise UnitMismatchError(f"Emission attributes are not all weights")
@@ -859,7 +903,7 @@ def extract_imported_emissions(
     )
     if not input_eattrs:
         return None, []
-    
+
     # Check if there is at most one attribute per activity
     activities = [attr.activity for attr in input_eattrs]
     duplicate_activities = {act for act in set(activities) if activities.count(act) > 1}
@@ -900,7 +944,9 @@ def sample_objects(
     ocel: ApiOcel,
 ) -> SampleObjectsResponse:
     objects = ocel.objects.sample(n=10)
-    data = objects_to_api(objects, include_empty_attrs=False, include_empty_values=False)
+    data = objects_to_api(
+        objects, include_empty_attrs=False, include_empty_values=False
+    )
     return SampleObjectsResponse(
         **session.respond(
             route="sample-objects",

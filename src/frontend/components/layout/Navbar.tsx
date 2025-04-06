@@ -100,6 +100,9 @@ const Navbar: React.FC<{
             <NavLink href="/climatiq" eventKey="2" pageName="ClimatiqPage" activePageName={pageName}>Climatiq</NavLink>
           </Nav.Item> */}
         </>)}
+        <Nav.Item>
+          <NavLink href="/editor" eventKey="0" pageName="EditorPage" activePageName={pageName}>Editor</NavLink>
+        </Nav.Item>
       </Nav>
 
       <div className="ms-auto d-flex align-items-center gap-1 text-secondary">
@@ -171,7 +174,7 @@ const Navbar: React.FC<{
                 onClick={() => triggerDownload({ emissionDownloadMode: emissionDownloadMode })}
                 variant="primary"
                 title="Download OCEL with user preferences"
-                // setLoadingText={setLoadingText}
+              // setLoadingText={setLoadingText}
               >
                 <FaDownload />
               </IconButton>

@@ -3,7 +3,27 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { TaskStatusTaskStatusGetData, TaskStatusTaskStatusGetResponse, ValidateEmissionRuleValidateEmissionRulePostData, ValidateEmissionRuleValidateEmissionRulePostResponse, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostData, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostResponse, ComputeEmissionsComputeEmissionsPostData, ComputeEmissionsComputeEmissionsPostResponse, DiscoverDfgDfgPostData, DiscoverDfgDfgPostResponse, DiscoverEfgEfgPostData, DiscoverEfgEfgPostResponse, OcpnOcpnPostData, OcpnOcpnPostResponse, ObjectAllocationObjectAllocationPostData, ObjectAllocationObjectAllocationPostResponse, ImportOcelImportPostData, ImportOcelImportPostResponse, ImportDefaultOcelImportDefaultGetData, ImportDefaultOcelImportDefaultGetResponse, LoadOcelLoadGetData, LoadOcelLoadGetResponse, DownloadOcelDownloadGetData, DownloadOcelDownloadGetResponse, UpdateStateUpdatePutData, UpdateStateUpdatePutResponse, SampleObjectsSampleObjectsGetData, SampleObjectsSampleObjectsGetResponse, SampleEventsSampleEventsGetData, SampleEventsSampleEventsGetResponse, DefaultOcelsOcelDefaultGetData, DefaultOcelsOcelDefaultGetResponse, GetClimatiqUnitsClimatiqUnitsListGetResponse, UnitSearchUnitsSearchGetData, UnitSearchUnitsSearchGetResponse } from './types.gen';
+import type { EventsEditorEventsGetData, EventsEditorEventsGetResponse, TaskStatusTaskStatusGetData, TaskStatusTaskStatusGetResponse, ValidateEmissionRuleValidateEmissionRulePostData, ValidateEmissionRuleValidateEmissionRulePostResponse, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostData, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostResponse, ComputeEmissionsComputeEmissionsPostData, ComputeEmissionsComputeEmissionsPostResponse, DiscoverDfgDfgPostData, DiscoverDfgDfgPostResponse, DiscoverEfgEfgPostData, DiscoverEfgEfgPostResponse, OcpnOcpnPostData, OcpnOcpnPostResponse, ObjectAllocationObjectAllocationPostData, ObjectAllocationObjectAllocationPostResponse, ImportOcelImportPostData, ImportOcelImportPostResponse, ImportDefaultOcelImportDefaultGetData, ImportDefaultOcelImportDefaultGetResponse, LoadOcelLoadGetData, LoadOcelLoadGetResponse, DownloadOcelDownloadGetData, DownloadOcelDownloadGetResponse, UpdateStateUpdatePutData, UpdateStateUpdatePutResponse, SampleObjectsSampleObjectsGetData, SampleObjectsSampleObjectsGetResponse, SampleEventsSampleEventsGetData, SampleEventsSampleEventsGetResponse, DefaultOcelsOcelDefaultGetData, DefaultOcelsOcelDefaultGetResponse, GetClimatiqUnitsClimatiqUnitsListGetResponse, UnitSearchUnitsSearchGetData, UnitSearchUnitsSearchGetResponse } from './types.gen';
+
+/**
+ * Filtered Events
+ * @param data The data for the request.
+ * @param data.oceanSessionId
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const eventsEditorEventsGet = (data: EventsEditorEventsGetData): CancelablePromise<EventsEditorEventsGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/editor/events',
+        headers: {
+            'Ocean-Session-Id': data.oceanSessionId
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
 
 /**
  * Task status

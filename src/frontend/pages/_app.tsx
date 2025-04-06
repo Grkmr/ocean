@@ -18,6 +18,7 @@ import { selectAppState, useOceanStore } from '@/src/zustand';
 import { Mutex } from 'async-mutex';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 type InitialPageProps = {
   [x: string]: any;
@@ -95,6 +96,8 @@ const OceanApp: React.FC<AppProps<InitialPageProps>> = ({ Component, pageProps }
   const { climatiqUnits, setClimatiqUnits } = useOceanStore.useState.climatiqUnits()
 
   const [preventUpdates, setPreventUpdates] = useState<number>(1)
+
+  const [queryClient] = useState(() => new QueryClient())
 
   const apiMutex = new Mutex()
 
@@ -437,26 +440,28 @@ const OceanApp: React.FC<AppProps<InitialPageProps>> = ({ Component, pageProps }
         ignoreOcel: true  // prevent triggering updateAppState after receiving response
       })
     }
-  // }, [appStateExport])
-  // }, [appState])
+    // }, [appStateExport])
+    // }, [appState])
   }, [objectTypeColors, objectTypeClasses, attributeUnits, emissionAttributes, emissionRules, objectAllocationConfig])
 
-  return (<>
-    <ConfirmationModalProvider>
-      <Layout
-        pageName={pageName}
-        darkMode={darkMode}
-      >
-        <Component
-          isClient={isClient}
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ConfirmationModalProvider>
+        <Layout
+          pageName={pageName}
           darkMode={darkMode}
-          toggleDarkMode={toggleDarkMode}
-          apiWrapper={apiWrapper}
-          {...pageProps}
-        />
-      </Layout>
-    </ConfirmationModalProvider>
-  </>)
+        >
+          <Component
+            isClient={isClient}
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+            apiWrapper={apiWrapper}
+            {...pageProps}
+          />
+        </Layout>
+      </ConfirmationModalProvider>
+    </QueryClientProvider>
+  )
 
 }
 

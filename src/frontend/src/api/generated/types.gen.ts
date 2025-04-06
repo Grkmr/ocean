@@ -655,6 +655,12 @@ export type WeightedDirectedGraphResponse = {
     };
 };
 
+export type EventsEditorEventsGetData = {
+    oceanSessionId: string;
+};
+
+export type EventsEditorEventsGetResponse = (unknown);
+
 export type TaskStatusTaskStatusGetData = {
     oceanSessionId: string;
     taskId: string;
