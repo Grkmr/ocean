@@ -33,7 +33,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.42.1",
+    "@hey-api/openapi-ts": "^0.62",
     "@types/chroma-js": "^2.4.4",
     "@types/d3": "^7.4.3",
     "@types/debounce-promise": "^3.1.9",
