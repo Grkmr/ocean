@@ -271,6 +271,12 @@ export type EventEmissionRule_Output = {
     readonly defaultName: string;
 };
 
+export type EventFilter = {
+    time_span?: (TimeSpan | null);
+    activity_names?: (Array<(string)> | null);
+    object_types?: (Array<(string)> | null);
+};
+
 export type GetAvailableAttributesRequest = {
     type: 'EventEmissionRule' | 'E2OEmissionRule';
     activity: string;
@@ -523,6 +529,12 @@ export type OcpnStructure = {
     arcs: Array<Arc>;
 };
 
+export type PaginatedResponse_OcelEvent_ = {
+    page: number;
+    totalPages: number;
+    data: Array<OcelEvent>;
+};
+
 export type ProcessEmissions = {
     /**
      * A unit (physical, currency, ...), represented by a symbol, name, and dimensionality.
@@ -602,6 +614,11 @@ export type TaskStatusResponse = {
     task: TaskResponse;
 };
 
+export type TimeSpan = {
+    start?: (string | null);
+    end?: (string | null);
+};
+
 export type UpdateAppStateRequestBody = {
     /**
      * User input to be saved in the server session
@@ -655,11 +672,15 @@ export type WeightedDirectedGraphResponse = {
     };
 };
 
-export type EventsEditorEventsGetData = {
+export type EventsEditorEventsPostData = {
     oceanSessionId: string;
+    page?: number;
+    requestBody: EventFilter;
+    size?: number;
+    sortBy?: (string | null);
 };
 
-export type EventsEditorEventsGetResponse = (unknown);
+export type EventsEditorEventsPostResponse = (PaginatedResponse_OcelEvent_);
 
 export type TaskStatusTaskStatusGetData = {
     oceanSessionId: string;

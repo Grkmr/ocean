@@ -9,6 +9,6 @@ class TimeSpan(BaseModel):
 
 
 class EventFilter(BaseModel):
-    time_span: TimeSpan
+    time_span: Optional[TimeSpan] = None
     activity_names: Optional[List[str]] = None
     object_types: Optional[List[str]] = None

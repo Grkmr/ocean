@@ -5,6 +5,7 @@ description = ""
 authors = ["Raimund Hensen <raimund.hensen@rwth-aachen.de>"]
 readme = "README.md"
 repository = "https://github.com/rwth-pads/ocean"
+package-mode=false
 
 [tool.poetry.dependencies]
 python = "^3.10"
