@@ -1,4 +1,4 @@
-import { CancelablePromise } from "@/src/api/generated"
+import { CancelablePromise, EventFilter } from "@/src/api/generated"
 import { Api } from "@/src/openapi"
 import { useOceanStore } from "@/src/zustand"
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
@@ -19,10 +19,17 @@ const useQueryWithSession = <TData>({ queryFn, ...options }: useQueryWithSession
 
 
 
-export const usePaginatedEvents = () => {
+export const usePaginatedEvents = ({ filter }: { filter: EventFilter }) => {
   const { currentPage } = usePagination()
   return useQueryWithSession({
     queryKey: [currentPage],
-    queryFn: (data) => Api.eventsEditorEventsPost({ ...data, requestBody: {}, page: currentPage })
+    queryFn: (data) => Api.eventsEditorEventsPost({ ...data, requestBody: filter, page: currentPage })
+  })
+}
+
+export const useOcelInfo = () => {
+  return useQueryWithSession({
+    queryKey: [],
+    queryFn: (data) => Api.infoEditorInfoPost({ ...data, requestBody: {} })
   })
 }

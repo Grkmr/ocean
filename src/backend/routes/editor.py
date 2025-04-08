@@ -6,11 +6,11 @@ from pandas.core.arraylike import default_array_ufunc
 from pydantic.main import BaseModel
 
 from api.dependencies import ApiSession
-from api.model.editor import EventFilter
 from api.serialize import OcelEvent, events_to_api
 from editor.dataframe import paginated_dataframe
 from editor.model.api import PaginatedResponse
-from editor.ocel import apply_event_filter
+from editor.ocel import EventFilter, apply_event_filter
+from editor.util.overview import OCELSummary, get_ocel_information
 
 
 router = APIRouter(prefix="/editor", tags=["editor"])
@@ -34,7 +34,9 @@ def events(
 ) -> PaginatedResponse[OcelEvent]:
     ocel = session.ocel.ocel
 
-    events = apply_event_filter(ocel, EventFilter())
+    events = apply_event_filter(ocel, filter)
+    print(events)
+
     paginated_events = paginated_dataframe(
         events,
         page,
@@ -51,3 +53,8 @@ def events(
         totalPages=paginated_events.total_pages,
         page=paginated_events.page,
     )
+
+
+@router.post("/info", summary="Filtered Events", response_model=OCELSummary)
+def info(session: ApiSession, filter: EventFilter) -> OCELSummary:
+    return get_ocel_information(session.ocel.ocel)

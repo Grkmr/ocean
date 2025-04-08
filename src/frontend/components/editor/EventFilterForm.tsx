@@ -1,8 +1,9 @@
-import { usePaginatedEvents } from "@/hooks/api"
+import { useOcelInfo, usePaginatedEvents } from "@/hooks/api"
 import { Button, Form, Placeholder, Table } from "react-bootstrap"
 import Pagination from "./Pagination"
 import { useForm } from "react-hook-form"
-
+import { EventFilter } from "@/src/api/generated/types.gen";
+import { useState } from "react";
 
 type FormValues = {
   startDate: string;
@@ -12,9 +13,16 @@ type FormValues = {
 const allActivities = ['Running', 'Swimming', 'Cycling', 'Yoga'];
 
 const EditorFilterForm = () => {
-  const { data: paginatedEvents } = usePaginatedEvents()
-
-
+  const [filter, setFilter] = useState<EventFilter>({
+    time_span: null,
+    object_types: null,
+    object_counts: null,
+    activity_names: null,
+    event_attributes: null,
+    object_attributes_values: null,
+  })
+  const { data: paginatedEvents } = usePaginatedEvents({ filter })
+  const { data: ocelInfo } = useOcelInfo()
   const {
     register,
     handleSubmit,
@@ -30,6 +38,7 @@ const EditorFilterForm = () => {
   };
 
   const selectedActivities = watch('activities', []) ?? [];
+
 
   return <>
 

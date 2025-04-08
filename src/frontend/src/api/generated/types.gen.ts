@@ -275,6 +275,9 @@ export type EventFilter = {
     time_span?: (TimeSpan | null);
     activity_names?: (Array<(string)> | null);
     object_types?: (Array<(string)> | null);
+    object_counts?: (Array<NumericalFilter> | null);
+    object_attributes_values?: (Array<(NumericalFilter | NominalFilter)> | null);
+    event_attributes?: (Array<(NumericalFilter | NominalFilter)> | null);
 };
 
 export type GetAvailableAttributesRequest = {
@@ -361,6 +364,19 @@ export type LocalEmissionFactor_Output = {
     };
 };
 
+export type NominalAttribute = {
+    attribute: string;
+    type: "nominal";
+    sample_values: Array<(string | number)>;
+    num_unique: number;
+};
+
+export type NominalFilter = {
+    type: "nominal";
+    field_name: string;
+    value: Array<(string)>;
+};
+
 export type NumberStats = {
     empty: boolean;
     count: number;
@@ -371,6 +387,22 @@ export type NumberStats = {
     max: number;
     nonzero: number;
 };
+
+export type NumericalAttribute = {
+    attribute: string;
+    type: "numerical";
+    min: number;
+    max: number;
+};
+
+export type NumericalFilter = {
+    type: "numerical";
+    filter: 'eq' | 'lt' | 'gt';
+    field_name: string;
+    value: (number);
+};
+
+export type filter = 'eq' | 'lt' | 'gt';
 
 export type ObjectAllocationConfig = {
     targetObjectTypes: Array<(string)>;
@@ -425,6 +457,16 @@ export type ObjectAttributeDefinition = {
 
 export type ObjectTypeRequestBody = {
     objectType: string;
+};
+
+export type ObjectTypeSummary = {
+    object_type: string;
+    attributes: Array<(NumericalAttribute | NominalAttribute)>;
+};
+
+export type OCELActivityCount = {
+    activity: string;
+    count: number;
 };
 
 export type OcelData = {
@@ -487,6 +529,14 @@ export type OcelResponse = {
     appState?: (AppState_Output | null);
     emissions?: (ProcessEmissions | null);
     ocel: OcelData;
+};
+
+export type OCELSummary = {
+    start_timestamp: string;
+    end_timestamp: string;
+    activities: Array<OCELActivityCount>;
+    object_summaries: Array<ObjectTypeSummary>;
+    relation_summaries: Array<RelationCountSummary>;
 };
 
 export type OCPN = {
@@ -568,6 +618,14 @@ export type ProcessEmissions = {
 export type QualifiedAttribute = {
     qualifier: (string | null);
     attribute: (EventAttributeDefinition | ObjectAttributeDefinition);
+};
+
+export type RelationCountSummary = {
+    qualifier: string;
+    activity: string;
+    object_type: string;
+    min_count: number;
+    max_count: number;
 };
 
 export type SampleEventsResponse = {
@@ -681,6 +739,13 @@ export type EventsEditorEventsPostData = {
 };
 
 export type EventsEditorEventsPostResponse = (PaginatedResponse_OcelEvent_);
+
+export type InfoEditorInfoPostData = {
+    oceanSessionId: string;
+    requestBody: EventFilter;
+};
+
+export type InfoEditorInfoPostResponse = (OCELSummary);
 
 export type TaskStatusTaskStatusGetData = {
     oceanSessionId: string;
