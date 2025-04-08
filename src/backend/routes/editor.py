@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter
 from fastapi import Query
 from pandas.core.arraylike import default_array_ufunc
+import pm4py
 from pydantic.main import BaseModel
 
 from api.dependencies import ApiSession
@@ -57,4 +58,9 @@ def events(
 
 @router.post("/info", summary="Filtered Events", response_model=OCELSummary)
 def info(session: ApiSession, filter: EventFilter) -> OCELSummary:
-    return get_ocel_information(session.ocel.ocel)
+    return get_ocel_information(
+        pm4py.filter_ocel_events(
+            session.ocel.ocel,
+            list(apply_event_filter(session.ocel.ocel, filter)["ocel:eid"]),
+        )
+    )

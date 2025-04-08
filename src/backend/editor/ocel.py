@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 from pm4py import OCEL
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 import pandas as pd
 from typing import List, Literal, Optional, Union, cast
 

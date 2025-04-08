@@ -22,14 +22,15 @@ const useQueryWithSession = <TData>({ queryFn, ...options }: useQueryWithSession
 export const usePaginatedEvents = ({ filter }: { filter: EventFilter }) => {
   const { currentPage } = usePagination()
   return useQueryWithSession({
-    queryKey: [currentPage],
+    queryKey: [currentPage, filter],
     queryFn: (data) => Api.eventsEditorEventsPost({ ...data, requestBody: filter, page: currentPage })
+
   })
 }
 
-export const useOcelInfo = () => {
+export const useOcelInfo = ({ filter }: { filter: EventFilter }) => {
   return useQueryWithSession({
-    queryKey: [],
-    queryFn: (data) => Api.infoEditorInfoPost({ ...data, requestBody: {} })
+    queryKey: [filter],
+    queryFn: (data) => Api.infoEditorInfoPost({ ...data, requestBody: filter })
   })
 }
