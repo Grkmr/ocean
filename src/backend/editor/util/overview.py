@@ -1,31 +1,18 @@
-from datetime import datetime
 from pm4py import OCEL
 import pm4py
 from pydantic import BaseModel
-from typing import Literal, Union, List, cast
+from typing import List, cast
 import pandas as pd
 
-
-class NumericalAttribute(BaseModel):
-    attribute: str
-    type: Literal["numerical"]
-    min: float
-    max: float
-
-
-class NominalAttribute(BaseModel):
-    attribute: str
-    type: Literal["nominal"]
-    sample_values: List[Union[str, int, float]]
-    num_unique: int
-
-
-ObjectAttributeSummary = Union[NumericalAttribute, NominalAttribute]
-
-
-class ObjectTypeSummary(BaseModel):
-    object_type: str
-    attributes: List[ObjectAttributeSummary]
+from editor.model.api import (
+    NominalAttribute,
+    NumericalAttribute,
+    OCELActivityCount,
+    OCELSummary,
+    ObjectAttributeSummary,
+    ObjectTypeSummary,
+    RelationCountSummary,
+)
 
 
 def summarize_object_attributes(
@@ -95,14 +82,6 @@ def summarize_object_attributes(
     ]
 
 
-class RelationCountSummary(BaseModel):
-    qualifier: str
-    activity: str
-    object_type: str
-    min_count: int
-    max_count: int
-
-
 def get_ocel_relation_metadata(ocel: pm4py.OCEL) -> List[RelationCountSummary]:
     qualifier_col = ocel.qualifier
     activity_col = ocel.event_activity
@@ -138,19 +117,6 @@ def get_ocel_relation_metadata(ocel: pm4py.OCEL) -> List[RelationCountSummary]:
         for _, row in summary.iterrows()
     ]
     return summaries
-
-
-class OCELActivityCount(BaseModel):
-    activity: str
-    count: int
-
-
-class OCELSummary(BaseModel):
-    start_timestamp: datetime
-    end_timestamp: datetime
-    activities: List[OCELActivityCount]
-    object_summaries: List[ObjectTypeSummary]
-    relation_summaries: List[RelationCountSummary]
 
 
 def get_ocel_information(ocel: pm4py.OCEL) -> OCELSummary:

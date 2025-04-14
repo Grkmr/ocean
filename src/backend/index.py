@@ -352,7 +352,7 @@ def ocpn(
     req: OcpnRequestBody,
 ) -> OcpnResponse:
     ocpn = ocel.ocpn(otypes=req.object_types)  # type: ignore
-
+    ocel._init_cache
     # TODO minimize/rename the function, it does not do visualization any more
     ocpn = viz_ocpn.visualize(
         ocpn,

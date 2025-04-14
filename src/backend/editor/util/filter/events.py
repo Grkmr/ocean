@@ -5,22 +5,7 @@ from pm4py import OCEL
 from pydantic import BaseModel
 import pandas as pd
 from typing import List, Literal, Optional, Union, cast
-
-
-class NumericalFilter(BaseModel):
-    type: Literal["numerical"]
-    filter: Literal["eq", "lt", "gt"]
-    field_name: str
-    value: Union[int, float]
-
-
-class NominalFilter(BaseModel):
-    type: Literal["nominal"]
-    field_name: str
-    value: List[str]
-
-
-Filter = Union[NumericalFilter, NominalFilter]
+from editor.model.filter import EventFilter, Filter, NumericalFilter
 
 
 def filter_by_object_count(ocel: OCEL, filter_array: list[NumericalFilter]):
@@ -114,20 +99,6 @@ def filter_mask_by_event_attributes(ocel: OCEL, filters: List[Filter]):
                 filter_object.value
             )
     return event_mask
-
-
-class TimeSpan(BaseModel):
-    start: Optional[datetime] = None
-    end: Optional[datetime] = None
-
-
-class EventFilter(BaseModel):
-    time_span: Optional[TimeSpan] = None
-    activity_names: Optional[List[str]] = None
-    object_types: Optional[List[str]] = None
-    object_counts: Optional[List[NumericalFilter]] = None
-    object_attributes_values: Optional[List[Filter]] = None
-    event_attributes: Optional[List[Filter]]
 
 
 def apply_event_filter(ocel: OCEL, filter: EventFilter) -> DataFrame:

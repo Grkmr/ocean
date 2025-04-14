@@ -7,6 +7,7 @@ import BSPagination from 'react-bootstrap/Pagination';
 
 const Pagination: React.FC<{ totalPages: number, windowSize?: number }> = ({ totalPages, windowSize = 10 }) => {
 
+
   const { handlePageChange, currentPage } = usePagination()
 
   const pages = useMemo(() => {

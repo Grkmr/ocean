@@ -103,6 +103,10 @@ const Navbar: React.FC<{
         <Nav.Item>
           <NavLink href="/editor" eventKey="0" pageName="EditorPage" activePageName={pageName}>Editor</NavLink>
         </Nav.Item>
+        <Nav.Item>
+          <NavLink href="/overview/events" eventKey="0" pageName="OverviewPage" activePageName={pageName}>Overview</NavLink>
+        </Nav.Item>
+
       </Nav>
 
       <div className="ms-auto d-flex align-items-center gap-1 text-secondary">

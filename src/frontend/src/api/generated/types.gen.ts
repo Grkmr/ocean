@@ -277,7 +277,7 @@ export type EventFilter = {
     object_types?: (Array<(string)> | null);
     object_counts?: (Array<NumericalFilter> | null);
     object_attributes_values?: (Array<(NumericalFilter | NominalFilter)> | null);
-    event_attributes?: (Array<(NumericalFilter | NominalFilter)> | null);
+    event_attributes: (Array<(NumericalFilter | NominalFilter)> | null);
 };
 
 export type GetAvailableAttributesRequest = {
@@ -694,6 +694,12 @@ export type UpdateAppStateResponse = {
     emissions?: (ProcessEmissions | null);
 };
 
+export type UpsertAttributesRequest = {
+    new_attributes: {
+        [key: string]: unknown;
+    };
+};
+
 export type ValidateEmissionRuleRequest = {
     rule: (EventEmissionRule_Input | E2OEmissionRule_Input);
 };
@@ -746,6 +752,14 @@ export type InfoEditorInfoPostData = {
 };
 
 export type InfoEditorInfoPostResponse = (OCELSummary);
+
+export type UpsertObjectAttributesEditorApiOcelOtypeUpsertAttributesPostData = {
+    oceanSessionId: string;
+    otype: string;
+    requestBody: UpsertAttributesRequest;
+};
+
+export type UpsertObjectAttributesEditorApiOcelOtypeUpsertAttributesPostResponse = (OcelResponse);
 
 export type TaskStatusTaskStatusGetData = {
     oceanSessionId: string;

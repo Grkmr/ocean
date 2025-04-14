@@ -338,6 +338,7 @@ const OceanApp: React.FC<AppProps<InitialPageProps>> = ({ Component, pageProps }
       }
     }
 
+    console.log(responseData)
     // Process OCEL
     if (!ignoreOcel && "ocel" in responseData) {
       setOcel(responseData.ocel as OCEL)  // TODO MA-171 use generated type
