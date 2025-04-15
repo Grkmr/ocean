@@ -61,7 +61,7 @@ const UpsertObjectsForm = () => {
   const onSubmit = (data: FormValues) => {
     const payload: UpsertObjectsRequest = {
       ext_table: csvData,
-      object_fields: [data.objectFields.oidField, "new_products"],
+      object_fields: [data.objectFields.oidField, data.objectFields.otypeField],
       added_attributes: data.addedAttributes.map(({ csvField, ocelField }) => [
         csvField,
         ocelField,

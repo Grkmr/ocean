@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { EventsEditorEventsPostData, EventsEditorEventsPostResponse, InfoEditorInfoPostData, InfoEditorInfoPostResponse, UpsertAttributesEndpointEditorOcelUpsertAttributesPostData, UpsertAttributesEndpointEditorOcelUpsertAttributesPostResponse, UpsertObjectsEndpointEditorOcelUpsertObjectsPostData, UpsertObjectsEndpointEditorOcelUpsertObjectsPostResponse, ApplyO2oRuleEndpointEditorOcelApplyO2oPostData, ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, TaskStatusTaskStatusGetData, TaskStatusTaskStatusGetResponse, ValidateEmissionRuleValidateEmissionRulePostData, ValidateEmissionRuleValidateEmissionRulePostResponse, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostData, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostResponse, ComputeEmissionsComputeEmissionsPostData, ComputeEmissionsComputeEmissionsPostResponse, DiscoverDfgDfgPostData, DiscoverDfgDfgPostResponse, DiscoverEfgEfgPostData, DiscoverEfgEfgPostResponse, OcpnOcpnPostData, OcpnOcpnPostResponse, ObjectAllocationObjectAllocationPostData, ObjectAllocationObjectAllocationPostResponse, ImportOcelImportPostData, ImportOcelImportPostResponse, ImportDefaultOcelImportDefaultGetData, ImportDefaultOcelImportDefaultGetResponse, LoadOcelLoadGetData, LoadOcelLoadGetResponse, DownloadOcelDownloadGetData, DownloadOcelDownloadGetResponse, UpdateStateUpdatePutData, UpdateStateUpdatePutResponse, SampleObjectsSampleObjectsGetData, SampleObjectsSampleObjectsGetResponse, SampleEventsSampleEventsGetData, SampleEventsSampleEventsGetResponse, DefaultOcelsOcelDefaultGetData, DefaultOcelsOcelDefaultGetResponse, GetClimatiqUnitsClimatiqUnitsListGetResponse, UnitSearchUnitsSearchGetData, UnitSearchUnitsSearchGetResponse } from './types.gen';
+import type { EventsEditorEventsPostData, EventsEditorEventsPostResponse, InfoEditorInfoPostData, InfoEditorInfoPostResponse, UpsertAttributesEndpointEditorOcelUpsertAttributesPostData, UpsertAttributesEndpointEditorOcelUpsertAttributesPostResponse, UpsertObjectsEndpointEditorOcelUpsertObjectsPostData, UpsertObjectsEndpointEditorOcelUpsertObjectsPostResponse, ApplyO2oRuleEndpointEditorOcelApplyO2oPostData, ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, DistributeValueEndpointEditorOcelDistributeValuePostData, DistributeValueEndpointEditorOcelDistributeValuePostResponse, TaskStatusTaskStatusGetData, TaskStatusTaskStatusGetResponse, ValidateEmissionRuleValidateEmissionRulePostData, ValidateEmissionRuleValidateEmissionRulePostResponse, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostData, GetAvailableAttributesForEmissionRuleGetAvailableAttributesPostResponse, ComputeEmissionsComputeEmissionsPostData, ComputeEmissionsComputeEmissionsPostResponse, DiscoverDfgDfgPostData, DiscoverDfgDfgPostResponse, DiscoverEfgEfgPostData, DiscoverEfgEfgPostResponse, OcpnOcpnPostData, OcpnOcpnPostResponse, ObjectAllocationObjectAllocationPostData, ObjectAllocationObjectAllocationPostResponse, ImportOcelImportPostData, ImportOcelImportPostResponse, ImportDefaultOcelImportDefaultGetData, ImportDefaultOcelImportDefaultGetResponse, LoadOcelLoadGetData, LoadOcelLoadGetResponse, DownloadOcelDownloadGetData, DownloadOcelDownloadGetResponse, UpdateStateUpdatePutData, UpdateStateUpdatePutResponse, SampleObjectsSampleObjectsGetData, SampleObjectsSampleObjectsGetResponse, SampleEventsSampleEventsGetData, SampleEventsSampleEventsGetResponse, DefaultOcelsOcelDefaultGetData, DefaultOcelsOcelDefaultGetResponse, GetClimatiqUnitsClimatiqUnitsListGetResponse, UnitSearchUnitsSearchGetData, UnitSearchUnitsSearchGetResponse } from './types.gen';
 
 /**
  * Filtered Events
@@ -117,6 +117,29 @@ export const applyO2oRuleEndpointEditorOcelApplyO2oPost = (data: ApplyO2oRuleEnd
     return __request(OpenAPI, {
         method: 'POST',
         url: '/editor/ocel/apply-o2o',
+        headers: {
+            'Ocean-Session-Id': data.oceanSessionId
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Distribute Value Endpoint
+ * @param data The data for the request.
+ * @param data.oceanSessionId
+ * @param data.requestBody
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const distributeValueEndpointEditorOcelDistributeValuePost = (data: DistributeValueEndpointEditorOcelDistributeValuePostData): CancelablePromise<DistributeValueEndpointEditorOcelDistributeValuePostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/editor/ocel/distribute-value',
         headers: {
             'Ocean-Session-Id': data.oceanSessionId
         },

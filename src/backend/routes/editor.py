@@ -15,6 +15,7 @@ from editor.model.api import PaginatedResponse
 from editor.model.edit import O2ORule
 from editor.model.filter import EventFilter
 from editor.util.edit.attributes import upsert_attributes
+from editor.util.edit.events import distribute
 from editor.util.edit.o2o import apply_o2o_rule
 from editor.util.edit.objects import upsert_objects
 from editor.util.filter.events import apply_event_filter
@@ -64,12 +65,7 @@ def events(
 
 @router.post("/info", summary="Filtered Events", response_model=OCELSummary)
 def info(session: ApiSession, filter: EventFilter) -> OCELSummary:
-    return get_ocel_information(
-        pm4py.filter_ocel_events(
-            session.ocel.ocel,
-            list(apply_event_filter(session.ocel.ocel, filter)["ocel:eid"]),
-        )
-    )
+    return get_ocel_information(session.ocel.ocel)
 
 
 class UpsertAttributesRequest(BaseModel):
@@ -135,3 +131,29 @@ def apply_o2o_rule_endpoint(req: ApplyO2ORuleRequest, ocel: ApiOcel):
     new_relations = apply_o2o_rule(ocel.ocel, req.rule)
 
     return {"relations": new_relations}
+
+
+class DistributeRequest(BaseModel):
+    timetable: List[Tuple[str, float]]  # List of (timestamp, value)
+    weights: Optional[Dict[str, float]] = None  # activity -> weight
+
+
+@router.post("/ocel/distribute-value")
+def distribute_value_endpoint(req: DistributeRequest, ocel: ApiOcel):
+    timetable = DataFrame.from_records(
+        req.timetable, columns=["timetableTimestamp", "timetableValue"]
+    )
+
+    distributed_df = distribute(
+        ocel=ocel.ocel,
+        timetable=timetable,
+        timestamp_field="timetableTimestamp",
+        value_field="timetableValue",
+        weights=req.weights,
+    )
+    distributed_df = distributed_df.set_index(ocel.ocel.event_id_column)
+    ocel.events.loc[distributed_df.index, "distributed_value"] = distributed_df[
+        "distributed_value"
+    ]
+
+    return {"status": "success", "added_column": "distributed_value"}

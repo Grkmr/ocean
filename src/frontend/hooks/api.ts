@@ -1,4 +1,4 @@
-import { ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, ApplyO2ORuleRequest, CancelablePromise, EventFilter, UpsertAttributesEndpointEditorOcelUpsertAttributesPostResponse, UpsertAttributesRequest, UpsertObjectsEndpointEditorOcelUpsertObjectsPostResponse, UpsertObjectsRequest } from "@/src/api/generated"
+import { ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, ApplyO2ORuleRequest, CancelablePromise, DistributeRequest, DistributeValueEndpointEditorOcelDistributeValuePostResponse, EventFilter, UpsertAttributesEndpointEditorOcelUpsertAttributesPostResponse, UpsertAttributesRequest, UpsertObjectsEndpointEditorOcelUpsertObjectsPostResponse, UpsertObjectsRequest } from "@/src/api/generated"
 import { Api } from "@/src/openapi"
 import { useOceanStore } from "@/src/zustand"
 import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query"
@@ -84,6 +84,16 @@ export const useApplyO2ORule = () => {
   return useMutationWithSession<ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, ApplyO2ORuleRequest>({
     mutationFn: ({ oceanSessionId, variables }) => {
       return Api.applyO2oRuleEndpointEditorOcelApplyO2oPost({
+        oceanSessionId,
+        requestBody: variables,
+      });
+    },
+  });
+};
+export const useDistributeValue = () => {
+  return useMutationWithSession<DistributeValueEndpointEditorOcelDistributeValuePostResponse, DistributeRequest>({
+    mutationFn: ({ oceanSessionId, variables }) => {
+      return Api.distributeValueEndpointEditorOcelDistributeValuePost({
         oceanSessionId,
         requestBody: variables,
       });

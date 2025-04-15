@@ -6,11 +6,9 @@ import {
   Row,
   Col,
   Container,
-  InputGroup,
 } from "react-bootstrap";
 import { useForm, useFieldArray } from "react-hook-form";
 import Papa from "papaparse";
-import { Api } from "@/src/openapi";
 import { upsertAttributes } from "@/hooks/api";
 
 type FormValues = {
@@ -78,8 +76,8 @@ const AttributeUpsertForm = () => {
           table: data.target,
           ext_table: extTable,
           merge_fields: data.mergeFields.map(({ ocelField, csvField }) => [
-            ocelField,
             csvField,
+            ocelField,
           ]),
           added_columns: data.selectedColumns.map((col) => [col, col]),
           replace: true,

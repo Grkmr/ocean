@@ -19,8 +19,8 @@ def upsert_attributes(
 
     merged = target_table.merge(
         extentsion_table,
-        left_on=[x[0] for x in merge_fields],
-        right_on=[x[1] for x in merge_fields],
+        left_on=[x[1] for x in merge_fields],
+        right_on=[x[0] for x in merge_fields],
         how="left",
         suffixes=("", "_new"),
     )
@@ -41,6 +41,7 @@ def upsert_attributes(
             for _, col_new in added_columns
             if f"{col_new}_new" in merged.columns
         ]
+        + [ext_col for ext_col, target_col in merge_fields if target_col != ext_col]
     )
 
     if table == "objects":

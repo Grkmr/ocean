@@ -1,7 +1,8 @@
 
 import { useForm, useFieldArray } from "react-hook-form";
 import { Button, Form, Container, Row, Col } from "react-bootstrap";
-import { useApplyO2ORule } from "@/hooks/api";
+import { useApplyO2ORule, useOcelInfo } from "@/hooks/api";
+import { OCELSummary } from "@/src/api/generated";
 
 type FormValues = {
   sourceType: string;
@@ -14,12 +15,15 @@ type FormValues = {
   }[];
 };
 
-const operators = ["==", "!=", ">", "<", ">=", "<=", "contains", "regex"];
+const operators = ["==", "!=", ">", "<", ">=", "<="] as const;
+
+const getAttributeValues = (objectSummary: OCELSummary["object_summaries"], objectType: string) => ["ocel:oid", ...objectSummary.find(({ object_type }) => object_type === objectType)!.attributes.map(({ attribute }) => attribute)]
 
 export const O2ORuleForm = () => {
+  const { data: ocelInfo } = useOcelInfo({ filter: { event_attributes: null } });
   const { mutate } = useApplyO2ORule();
 
-  const { register, handleSubmit, control } = useForm<FormValues>({
+  const { register, handleSubmit, control, watch } = useForm<FormValues>({
     defaultValues: {
       sourceType: "",
       targetType: "",
@@ -33,63 +37,114 @@ export const O2ORuleForm = () => {
     name: "joinConditions",
   });
 
+  const sourceType = watch("sourceType");
+  const targetType = watch("targetType");
+
   const onSubmit = (data: FormValues) => {
     mutate({
-
       rule: {
         source_type: data.sourceType,
         target_type: data.targetType,
-        relation_type: "o2o" as const,
-        join_conditions: data.joinConditions.map(({ targetAttribute, sourceAttribute, operator }) => ({ source_attribute: sourceAttribute, target_attribute: targetAttribute, operator })),
-      }
-
+        relation_type: "o2o",
+        join_conditions: data.joinConditions.map((c) => ({
+          source_attribute: c.sourceAttribute,
+          target_attribute: c.targetAttribute,
+          operator: c.operator,
+        })),
+      },
     });
   };
+
+
 
   return (
     <Container>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3">
           <Form.Label>Source Type</Form.Label>
-          <Form.Control {...register("sourceType")} required />
+          <Form.Select {...register("sourceType")} required>
+            <option value="">Select Source Type</option>
+            {ocelInfo?.object_summaries.map(({ object_type }) => (
+              <option key={object_type} value={object_type}>
+                {object_type}
+              </option>
+            ))}
+          </Form.Select>
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Target Type</Form.Label>
-          <Form.Control {...register("targetType")} required />
+          <Form.Select {...register("targetType")} required>
+            <option value="">Select Target Type</option>
+            {ocelInfo?.object_summaries.map(({ object_type }) => (
+              <option key={object_type} value={object_type}>
+                {object_type}
+              </option>
+            ))}
+          </Form.Select>
         </Form.Group>
 
         <hr />
-        <h5>Join Conditions</h5>
-        {fields.map((field, idx) => (
-          <Row key={field.id} className="mb-2">
-            <Col>
-              <Form.Control {...register(`joinConditions.${idx}.sourceAttribute`)} placeholder="Source Attr" />
-            </Col>
-            <Col>
-              <Form.Select {...register(`joinConditions.${idx}.operator`)}>
-                {operators.map((op) => (
-                  <option key={op} value={op}>
-                    {op}
-                  </option>
-                ))}
-              </Form.Select>
-            </Col>
-            <Col>
-              <Form.Control {...register(`joinConditions.${idx}.targetAttribute`)} placeholder="Target Attr" />
-            </Col>
-            <Col xs="auto">
-              <Button variant="danger" onClick={() => remove(idx)}>×</Button>
-            </Col>
-          </Row>
-        ))}
+        {
+          ((sourceType && targetType) && (<>
 
-        <Button variant="secondary" onClick={() => append({ sourceAttribute: "", operator: "==", targetAttribute: "" })}>
-          + Add Condition
-        </Button>
+            <h5>Join Conditions</h5>
+            {fields.map((field, idx) => (
+              <Row key={field.id} className="mb-2">
+                <Col>
+                  <Form.Select {...register(`joinConditions.${idx}.sourceAttribute`)}>
+                    <option value="">Source Attr</option>
+                    {getAttributeValues(ocelInfo!.object_summaries, sourceType).map((attribute) => (
+                      <option key={attribute} value={attribute}>
+                        {attribute}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+                <Col>
+                  <Form.Select {...register(`joinConditions.${idx}.operator`)}>
+                    {operators.map((op) => (
+                      <option key={op} value={op}>
+                        {op}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+                <Col>
+                  <Form.Select {...register(`joinConditions.${idx}.targetAttribute`)}>
+                    <option value="">Target Attr</option>
+                    {getAttributeValues(ocelInfo!.object_summaries, targetType).map((attribute) => (
+                      <option key={attribute} value={attribute}>
+                        {attribute}
+                      </option>
+                    ))}
+
+                  </Form.Select>
+                </Col>
+                <Col xs="auto">
+                  <Button variant="danger" onClick={() => remove(idx)}>
+                    ×
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+
+            <Button
+              variant="secondary"
+              onClick={() => append({ sourceAttribute: "", operator: "==", targetAttribute: "" })}
+            >
+              + Add Condition
+            </Button>
+
+
+
+
+          </>))
+
+        }
 
         <hr />
-        <Button type="submit" variant="primary" >
+        <Button type="submit" variant="primary">
           Apply Rule
         </Button>
       </Form>

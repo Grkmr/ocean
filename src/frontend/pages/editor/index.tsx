@@ -9,6 +9,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import UpsertObjectsForm from "@/components/editor/UpsertObjectsForm";
 import { O2ORuleForm } from "@/components/editor/AddO2OForm";
+import { DistributeValueForm } from "@/components/editor/DistributeValueForm";
 
 const EditorPage: React.FC<PageProps> = ({ apiWrapper }) => {
   return <>
@@ -23,6 +24,9 @@ const EditorPage: React.FC<PageProps> = ({ apiWrapper }) => {
         <O2ORuleForm />
       </Tab>
 
+      <Tab eventKey="distribute" title="Distribute Values">
+        <DistributeValueForm />
+      </Tab>
     </Tabs>
   </>
 

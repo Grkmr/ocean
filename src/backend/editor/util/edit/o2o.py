@@ -31,12 +31,10 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
     Apply an o2o rule using Pydantic rule model.
     """
 
-    # Apply source filter
     source_objs = apply_object_filter(
         ocel, rule.source_filter or ObjectFilter(object_types=[rule.source_type])
     ).copy()
 
-    # Apply target filter
     target_objs = apply_object_filter(
         ocel, rule.target_filter or ObjectFilter(object_types=[rule.target_type])
     ).copy()
@@ -44,11 +42,9 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
     if source_objs.empty or target_objs.empty:
         return []
 
-    # Separate join conditions
     eq_conditions = [cond for cond in rule.join_conditions if cond.operator == "=="]
     other_conditions = [cond for cond in rule.join_conditions if cond.operator != "=="]
 
-    # Merge on == conditions first
     if eq_conditions:
         merged = source_objs.merge(
             target_objs,
@@ -57,7 +53,6 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
             suffixes=("_src", "_tgt"),
         )
     else:
-        # If no == conditions, do cross join
         source_objs["_tmp_key"] = 1
         target_objs["_tmp_key"] = 1
         merged = source_objs.merge(
@@ -67,7 +62,6 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
     if merged.empty:
         return []
 
-    # Apply other conditions
     join_mask = pd.Series(True, index=merged.index)
 
     for cond in other_conditions:
@@ -80,7 +74,6 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
     if merged.empty:
         return []
 
-    # Generate o2o relations efficiently
     new_relations = merged.rename(
         columns={
             f"{ocel.object_id_column}_src": "source-object",

@@ -200,6 +200,16 @@ export type DirectedGraphResponse = {
     };
 };
 
+export type DistributeRequest = {
+    timetable: Array<[
+        string,
+        number
+    ]>;
+    weights?: ({
+    [key: string]: (number);
+} | null);
+};
+
 export type E2OEmissionRule_Input = {
     index: number;
     name?: (string | null);
@@ -417,7 +427,6 @@ export type NumericalFilter = {
 export type filter = 'eq' | 'lt' | 'gt';
 
 export type O2ORule = {
-    rule_name: string;
     relation_type?: "o2o";
     source_type: string;
     target_type: string;
@@ -836,6 +845,13 @@ export type ApplyO2oRuleEndpointEditorOcelApplyO2oPostData = {
 };
 
 export type ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse = (unknown);
+
+export type DistributeValueEndpointEditorOcelDistributeValuePostData = {
+    oceanSessionId: string;
+    requestBody: DistributeRequest;
+};
+
+export type DistributeValueEndpointEditorOcelDistributeValuePostResponse = (unknown);
 
 export type TaskStatusTaskStatusGetData = {
     oceanSessionId: string;

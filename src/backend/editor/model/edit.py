@@ -11,7 +11,6 @@ class JoinCondition(BaseModel):
 
 
 class O2ORule(BaseModel):
-    rule_name: str
     relation_type: Literal["o2o"] = "o2o"
     source_type: str
     target_type: str
