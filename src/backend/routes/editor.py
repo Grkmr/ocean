@@ -1,8 +1,10 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Literal, Optional, Tuple
 from fastapi import APIRouter
 from fastapi import Query
 from fastapi.exceptions import HTTPException
+from pandas.core.frame import DataFrame
 import pm4py
+from pydantic.fields import Field
 from pydantic.main import BaseModel
 
 from api.dependencies import ApiOcel, ApiSession
@@ -10,7 +12,11 @@ from api.model.response import OcelResponse
 from api.serialize import OcelEvent, events_to_api, ocel_to_api
 from editor.dataframe import paginated_dataframe
 from editor.model.api import PaginatedResponse
+from editor.model.edit import O2ORule
 from editor.model.filter import EventFilter
+from editor.util.edit.attributes import upsert_attributes
+from editor.util.edit.o2o import apply_o2o_rule
+from editor.util.edit.objects import upsert_objects
 from editor.util.filter.events import apply_event_filter
 from editor.util.overview import OCELSummary, get_ocel_information
 
@@ -67,92 +73,65 @@ def info(session: ApiSession, filter: EventFilter) -> OCELSummary:
 
 
 class UpsertAttributesRequest(BaseModel):
-    new_attributes: Dict[str, Any]
+    ext_table: List[Dict[str, Any]]
+    table: Literal["objects", "events"]
+    merge_fields: List[Tuple[str, str]]
+    added_columns: List[Tuple[str, str]]
+    replace: bool = True
 
 
-@router.post("/api/ocel/{otype}/upsert_attributes")
-def upsert_object_attributes(
-    otype: str, req: UpsertAttributesRequest, ocel: ApiOcel, session: ApiSession
-) -> OcelResponse:
-    # Check if otype exists
-    if otype not in ocel.object_types:
-        raise HTTPException(status_code=404, detail=f"Object type {otype} not found.")
+@router.post("/ocel/upsert-attributes")
+def upsert_attributes_endpoint(req: UpsertAttributesRequest, ocel: ApiOcel):
+    ext_table = DataFrame(req.ext_table)
 
-    # Select relevant objects
-    objects = ocel.objects
-    objects_of_type = objects[objects["ocel:type"] == otype].copy()
+    upsert_attributes(
+        ocel=ocel.ocel,
+        extentsion_table=ext_table,
+        table=req.table,
+        merge_fields=req.merge_fields,
+        added_columns=req.added_columns,
+        replace=req.replace,
+    )
 
-    if objects_of_type.empty:
-        raise HTTPException(
-            status_code=404, detail=f"No objects of type {otype} found."
-        )
+    return {"status": "success"}
 
-    # Create DataFrame with new attributes
-    ext_table = objects_of_type[["ocel:oid"]].copy()
-    for col, val in req.new_attributes.items():
-        ext_table[col] = val
 
-    print(ext_table)
-    print(req.new_attributes.keys())
-    # Upsert using your wrapper method
-    ocel.upsert_attributes(
-        ext_table=ext_table,  # type: ignore
-        table="objects",
-        merge_fields=[("ocel:oid", "ocel:oid")],
-        added_columns=[(col, col) for col in req.new_attributes.keys()],
-        replace=True,
+class UpsertObjectsRequest(BaseModel):
+    ext_table: List[Dict[str, Any]] = Field(
+        ..., description="List of object rows as dicts"
+    )
+    object_fields: Tuple[str, str] = Field(
+        ..., description="Tuple of (oid column, otype column)"
+    )
+    added_attributes: List[Tuple[str, str]] = Field(
+        ..., description="List of (CSV column, OCEL attribute)"
+    )
+    replace: bool = True
+
+
+@router.post("/ocel/upsert-objects")
+def upsert_objects_endpoint(req: UpsertObjectsRequest, ocel: ApiOcel):
+    ext_table = DataFrame(req.ext_table)
+
+    upsert_objects(
+        ocel=ocel.ocel,
+        object_table=ext_table,
+        object_fields=req.object_fields,
+        added_attributes=req.added_attributes,
+        replace=req.replace,
     )
 
     print(ocel.ocel.objects)
-    return OcelResponse(
-        **session.respond(
-            route="load",
-            msg=f'Event log "{ocel.meta["fileName"] or session.id}" has been updated.',
-            ocel=ocel_to_api(ocel, session=session),
-            emissions=session.emission_model.emissions,
-        )
-    )
+
+    return {"status": "success"}
 
 
-@router.post("/api/ocel/{otype}/test_upsert")
-def upsert_object_attributes(
-    otype: str, req: UpsertAttributesRequest, ocel: ApiOcel, session: ApiSession
-) -> OcelResponse:
-    # Check if otype exists
-    if otype not in ocel.object_types:
-        raise HTTPException(status_code=404, detail=f"Object type {otype} not found.")
+class ApplyO2ORuleRequest(BaseModel):
+    rule: O2ORule
 
-    # Select relevant objects
-    objects = ocel.objects
-    objects_of_type = objects[objects["ocel:type"] == otype].copy()
 
-    if objects_of_type.empty:
-        raise HTTPException(
-            status_code=404, detail=f"No objects of type {otype} found."
-        )
+@router.post("/ocel/apply-o2o")
+def apply_o2o_rule_endpoint(req: ApplyO2ORuleRequest, ocel: ApiOcel):
+    new_relations = apply_o2o_rule(ocel.ocel, req.rule)
 
-    # Create DataFrame with new attributes
-    ext_table = objects_of_type[["ocel:oid"]].copy()
-    for col, val in req.new_attributes.items():
-        ext_table[col] = val
-
-    print(ext_table)
-    print(req.new_attributes.keys())
-    # Upsert using your wrapper method
-    ocel.upsert_attributes(
-        ext_table=ext_table,  # type: ignore
-        table="objects",
-        merge_fields=[("ocel:oid", "ocel:oid")],
-        added_columns=[(col, col) for col in req.new_attributes.keys()],
-        replace=True,
-    )
-
-    print(ocel.ocel.objects)
-    return OcelResponse(
-        **session.respond(
-            route="load",
-            msg=f'Event log "{ocel.meta["fileName"] or session.id}" has been updated.',
-            ocel=ocel_to_api(ocel, session=session),
-            emissions=session.emission_model.emissions,
-        )
-    )
+    return {"relations": new_relations}
