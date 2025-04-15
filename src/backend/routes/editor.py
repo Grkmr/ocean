@@ -9,16 +9,23 @@ from pydantic.main import BaseModel
 
 from api.dependencies import ApiOcel, ApiSession
 from api.model.response import OcelResponse
-from api.serialize import OcelEvent, events_to_api, ocel_to_api
+from api.serialize import (
+    OcelEvent,
+    OcelObject,
+    events_to_api,
+    objects_to_api,
+    ocel_to_api,
+)
 from editor.dataframe import paginated_dataframe
 from editor.model.api import PaginatedResponse
 from editor.model.edit import O2ORule
-from editor.model.filter import EventFilter
+from editor.model.filter import EventFilter, ObjectFilter
 from editor.util.edit.attributes import upsert_attributes
 from editor.util.edit.events import distribute
 from editor.util.edit.o2o import apply_o2o_rule
 from editor.util.edit.objects import upsert_objects
 from editor.util.filter.events import apply_event_filter
+from editor.util.filter.objects import apply_object_filter
 from editor.util.overview import OCELSummary, get_ocel_information
 
 
@@ -60,6 +67,38 @@ def events(
         data=paginated_events.data,
         totalPages=paginated_events.total_pages,
         page=paginated_events.page,
+    )
+
+
+@router.post(
+    "/objects", summary="Filtered Events", response_model=PaginatedResponse[OcelObject]
+)
+def objects(
+    session: ApiSession,
+    filter: ObjectFilter,
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
+    sort_by: Optional[str] = None,
+) -> PaginatedResponse[OcelObject]:
+    ocel = session.ocel.ocel
+
+    events = apply_object_filter(ocel, filter)
+
+    paginated_objects = paginated_dataframe(
+        events,
+        page,
+        size,
+        None,
+        lambda df: objects_to_api(
+            df, include_empty_attrs=True, include_empty_values=True
+        ),
+    )
+    paginated_objects.data
+
+    return PaginatedResponse[OcelObject](
+        data=paginated_objects.data,
+        totalPages=paginated_objects.total_pages,
+        page=paginated_objects.page,
     )
 
 
@@ -151,9 +190,12 @@ def distribute_value_endpoint(req: DistributeRequest, ocel: ApiOcel):
         value_field="timetableValue",
         weights=req.weights,
     )
-    distributed_df = distributed_df.set_index(ocel.ocel.event_id_column)
-    ocel.events.loc[distributed_df.index, "distributed_value"] = distributed_df[
-        "distributed_value"
-    ]
+
+    ocel.ocel.events = ocel.ocel.events.merge(
+        distributed_df,
+        left_on=ocel.ocel.event_id_column,
+        right_index=True,
+        how="left",
+    )
 
     return {"status": "success", "added_column": "distributed_value"}

@@ -76,11 +76,14 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
 
     new_relations = merged.rename(
         columns={
-            f"{ocel.object_id_column}_src": "source-object",
-            f"{ocel.object_id_column}_tgt": "target-object",
+            f"{ocel.object_id_column}_src": "ocel:oid",
+            f"{ocel.object_id_column}_tgt": "ocel:oid_2",
         }
-    )[["source-object", "target-object"]].copy()
+    )[["ocel:oid", "ocel:oid_2"]].copy()
 
-    new_relations["relation-type"] = rule.relation_type
+    new_relations["ocel:qualifier"] = rule.qualifier
+
+    ocel.o2o = pd.concat([ocel.o2o, new_relations], ignore_index=True)
+    print(ocel.o2o.tail(10))
 
     return new_relations.to_dict(orient="records")

@@ -1,4 +1,4 @@
-import { ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, ApplyO2ORuleRequest, CancelablePromise, DistributeRequest, DistributeValueEndpointEditorOcelDistributeValuePostResponse, EventFilter, UpsertAttributesEndpointEditorOcelUpsertAttributesPostResponse, UpsertAttributesRequest, UpsertObjectsEndpointEditorOcelUpsertObjectsPostResponse, UpsertObjectsRequest } from "@/src/api/generated"
+import { ApplyO2oRuleEndpointEditorOcelApplyO2oPostResponse, ApplyO2ORuleRequest, CancelablePromise, DistributeRequest, DistributeValueEndpointEditorOcelDistributeValuePostResponse, EventFilter, ObjectFilter, UpsertAttributesEndpointEditorOcelUpsertAttributesPostResponse, UpsertAttributesRequest, UpsertObjectsEndpointEditorOcelUpsertObjectsPostResponse, UpsertObjectsRequest } from "@/src/api/generated"
 import { Api } from "@/src/openapi"
 import { useOceanStore } from "@/src/zustand"
 import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query"
@@ -51,6 +51,15 @@ export const usePaginatedEvents = ({ filter }: { filter: EventFilter }) => {
   return useQueryWithSession({
     queryKey: [currentPage, filter],
     queryFn: (data) => Api.eventsEditorEventsPost({ ...data, requestBody: filter, page: currentPage })
+
+  })
+}
+export const usePaginatedObjects = ({ filter }: { filter: ObjectFilter }) => {
+
+  const { currentPage } = usePagination()
+  return useQueryWithSession({
+    queryKey: [currentPage, filter],
+    queryFn: (data) => Api.objectsEditorObjectsPost({ ...data, requestBody: filter, page: currentPage })
 
   })
 }

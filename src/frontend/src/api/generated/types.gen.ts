@@ -428,6 +428,7 @@ export type filter = 'eq' | 'lt' | 'gt';
 
 export type O2ORule = {
     relation_type?: "o2o";
+    qualifier: string;
     source_type: string;
     target_type: string;
     source_filter?: (ObjectFilter | null);
@@ -619,6 +620,12 @@ export type PaginatedResponse_OcelEvent_ = {
     page: number;
     totalPages: number;
     data: Array<OcelEvent>;
+};
+
+export type PaginatedResponse_OcelObject_ = {
+    page: number;
+    totalPages: number;
+    data: Array<OcelObject>;
 };
 
 export type ProcessEmissions = {
@@ -817,6 +824,16 @@ export type EventsEditorEventsPostData = {
 };
 
 export type EventsEditorEventsPostResponse = (PaginatedResponse_OcelEvent_);
+
+export type ObjectsEditorObjectsPostData = {
+    oceanSessionId: string;
+    page?: number;
+    requestBody: ObjectFilter;
+    size?: number;
+    sortBy?: (string | null);
+};
+
+export type ObjectsEditorObjectsPostResponse = (PaginatedResponse_OcelObject_);
 
 export type InfoEditorInfoPostData = {
     oceanSessionId: string;

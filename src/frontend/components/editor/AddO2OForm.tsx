@@ -7,6 +7,7 @@ import { OCELSummary } from "@/src/api/generated";
 type FormValues = {
   sourceType: string;
   targetType: string;
+  qualifier: string;
   relationType: string;
   joinConditions: {
     sourceAttribute: string;
@@ -27,6 +28,7 @@ export const O2ORuleForm = () => {
     defaultValues: {
       sourceType: "",
       targetType: "",
+      qualifier: "",
       relationType: "",
       joinConditions: [{ sourceAttribute: "", operator: "==", targetAttribute: "" }],
     },
@@ -46,6 +48,7 @@ export const O2ORuleForm = () => {
         source_type: data.sourceType,
         target_type: data.targetType,
         relation_type: "o2o",
+        qualifier: data.qualifier,
         join_conditions: data.joinConditions.map((c) => ({
           source_attribute: c.sourceAttribute,
           target_attribute: c.targetAttribute,
@@ -84,6 +87,14 @@ export const O2ORuleForm = () => {
           </Form.Select>
         </Form.Group>
 
+        <Form.Group className="mb-3">
+          <Form.Label>Qualifier</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter qualifier"
+            {...register("qualifier")}
+          />
+        </Form.Group>
         <hr />
         {
           ((sourceType && targetType) && (<>

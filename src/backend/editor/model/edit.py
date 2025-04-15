@@ -12,6 +12,7 @@ class JoinCondition(BaseModel):
 
 class O2ORule(BaseModel):
     relation_type: Literal["o2o"] = "o2o"
+    qualifier: str
     source_type: str
     target_type: str
     source_filter: Optional[ObjectFilter] = None
