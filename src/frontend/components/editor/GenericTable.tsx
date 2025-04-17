@@ -19,22 +19,45 @@ const GenericTable: React.FC<GenericTableProps> = ({ type, table }) => {
       )
     }, [table]
   )
-  return <Table>
+  const objectHeader = useMemo(
+    () => {
+      if (type != "object") {
+        return []
+      }
+
+      return Array.from(
+        (table as OcelObject[]).reduce((acc, { relations }) => {
+          if (relations == null) {
+            return acc
+          }
+
+          Object.entries(relations).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value.length !== 0) {
+              acc.add(key);
+            }
+          });
+          return acc;
+        }, new Set<string>())
+      )
+    }, [table]
+  )
+  return <Table responsive={"sm"}>
     <thead>
       <th>#</th>
       {type === "event" && <th>Timestamp</th>}
       {header.map((headerTitle) => <th>{headerTitle}</th>)}
+      {objectHeader.map((headerTitle) => <th>{headerTitle}</th>)}
+      {type === "object"}
     </thead>
     <tbody>
       {table.map((tableItem) => <tr>
-        <td>{tableItem.id}</td>
+        <td >{tableItem.id}</td>
         {type === "event" && <td>{tableItem.timestamp!}</td>}
         {header.map((headerTitle) => <td>{tableItem.attr[headerTitle]! as string}</td>)}
+        {objectHeader.map((headerTitle) => <td>{(tableItem as OcelObject).relations != null ? (tableItem as OcelObject).relations[headerTitle]?.join(",") : ""}</td>)}
       </tr>)}
     </tbody>
   </Table>
-
-
 }
 
 

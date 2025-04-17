@@ -82,15 +82,20 @@ def objects(
 ) -> PaginatedResponse[OcelObject]:
     ocel = session.ocel.ocel
 
-    events = apply_object_filter(ocel, filter)
+    objects = apply_object_filter(ocel, filter)
 
     paginated_objects = paginated_dataframe(
-        events,
+        objects,
         page,
         size,
         None,
         lambda df: objects_to_api(
-            df, include_empty_attrs=True, include_empty_values=True
+            df,
+            include_empty_attrs=True,
+            include_empty_values=True,
+            object_relations=ocel.o2o[
+                ocel.o2o[ocel.object_id_column].isin(objects[ocel.object_id_column])
+            ],
         ),
     )
     paginated_objects.data

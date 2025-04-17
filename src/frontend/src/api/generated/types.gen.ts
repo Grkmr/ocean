@@ -555,6 +555,9 @@ export type OcelObject = {
     attr: {
         [key: string]: unknown;
     };
+    relations: ({
+    [key: string]: Array<(string)>;
+} | null);
 };
 
 export type OcelResponse = {

@@ -55,6 +55,9 @@ export const O2ORuleForm = () => {
           operator: c.operator,
         })),
       },
+    }, {
+      onSuccess: () => alert("O2O added successfully!"),
+      onError: () => alert("Something went wrong."),
     });
   };
 

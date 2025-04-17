@@ -65,6 +65,9 @@ export const DistributeValueForm = () => {
       timestamp_field: form.timestampField,
       value_field: form.valueField,
       weights: weightsDict,
+    }, {
+      onSuccess: () => alert("Values distributed successfully!"),
+      onError: () => alert("Something went wrong."),
     });
   };
 

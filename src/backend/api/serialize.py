@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List, Optional
 
 import pandas as pd
 
@@ -50,7 +50,8 @@ def ocel_to_api(
             activities=set(ocel.activities),
             activity_counts=ocel.activity_counts.to_dict(),
             e2o_counts={
-                act: ocel.type_relation_frequencies.xs(act).to_dict() for act in ocel.activities
+                act: ocel.type_relation_frequencies.xs(act).to_dict()
+                for act in ocel.activities
             },
             e2o_qualifier_counts=series_to_nested_dict(
                 ocel.qualifier_frequencies.set_index(
@@ -67,19 +68,23 @@ class OcelObject(ApiBaseModel):
     id: str
     type: str
     attr: dict[str, Any]
+    relations: Optional[dict[str, List[str]]]
 
 
 def objects_to_api(
     objects: pd.DataFrame,
     include_empty_attrs: bool = False,
     include_empty_values: bool = False,
+    object_relations: Optional[pd.DataFrame] = None,
 ) -> list[OcelObject]:
     """
     Serializes an object DataFrame to a dict, to be passed via the API as json.
     Only includes the attribute values that are contained in the DataFrame.
     Dynamic (time-variant) attributes are not added. (To include them, first process object_changes at a specified point in time.)
     """
-    attrs = [col for col in list(objects.columns) if col not in ["ocel:oid", "ocel:type"]]
+    attrs = [
+        col for col in list(objects.columns) if col not in ["ocel:oid", "ocel:type"]
+    ]
     if not include_empty_attrs:
         attrs = [attr for attr in attrs if not objects[attr].isna().all()]
 
@@ -99,11 +104,32 @@ def objects_to_api(
                 }
                 for i, row in enumerate(object_attr_values.to_dict("records"))
             ]
+
+    if object_relations is not None:
+        grouped = (
+            object_relations.groupby(["ocel:oid", "ocel:qualifier"])["ocel:oid_2"]
+            .apply(list)
+            .unstack()
+        )
+
+        relations = {
+            str(ocel_id): {
+                str(qualifier): [str(oid) for oid in val]
+                if isinstance(val, list)
+                else []
+                for qualifier, val in row.items()
+            }
+            for ocel_id, row in grouped.iterrows()
+        }
+    else:
+        relations = {}
+
     return [
         OcelObject(
-            id=row["ocel:oid"],
-            type=row["ocel:type"],
+            id=str(row["ocel:oid"]),
+            type=str(row["ocel:type"]),
             attr=row["attr"],
+            relations=relations.get(str(row["ocel:oid"]), None),
         )
         for i, row in objects.iterrows()
     ]
@@ -117,7 +143,9 @@ class OcelEvent(ApiBaseModel):
 
 
 def events_to_api(
-    events: pd.DataFrame, include_empty_attrs: bool = False, include_empty_values: bool = False
+    events: pd.DataFrame,
+    include_empty_attrs: bool = False,
+    include_empty_values: bool = False,
 ) -> list[OcelEvent]:
     """
     Serializes an event DataFrame to a dict, to be passed via the API as json.
@@ -140,7 +168,11 @@ def events_to_api(
             events["attr"] = event_attr_values.to_dict("records")
         else:
             events["attr"] = [
-                {k: v for j, (k, v) in enumerate(row.items()) if event_attr_values_notna.iloc[i, j]}
+                {
+                    k: v
+                    for j, (k, v) in enumerate(row.items())
+                    if event_attr_values_notna.iloc[i, j]
+                }
                 for i, row in enumerate(event_attr_values.to_dict("records"))
             ]
 

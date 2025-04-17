@@ -81,6 +81,9 @@ const AttributeUpsertForm = () => {
           ]),
           added_columns: data.selectedColumns.map((col) => [col, col]),
           replace: true,
+        }, {
+          onSuccess: () => alert("Objects upserted successfully!"),
+          onError: () => alert("Something went wrong."),
         });
       },
     });
