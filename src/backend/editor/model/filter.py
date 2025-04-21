@@ -30,7 +30,7 @@ class EventFilter(BaseModel):
     object_types: Optional[List[str]] = None
     object_counts: Optional[List[NumericalFilter]] = None
     object_attributes_values: Optional[List[Filter]] = None
-    event_attributes: Optional[List[Filter]]
+    event_attributes: Optional[List[Filter]] = None
 
 
 class ObjectFilter(BaseModel):
