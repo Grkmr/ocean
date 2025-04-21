@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Generic, List, Literal, TypeVar, Union
-from pydantic.main import BaseModel
 
+from pydantic.main import BaseModel
 
 T = TypeVar("T")
 

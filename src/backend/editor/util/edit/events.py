@@ -1,6 +1,6 @@
+import pandas as pd
 from pandas import DataFrame
 from pm4py import OCEL
-import pandas as pd
 
 
 def distribute(

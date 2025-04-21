@@ -27,6 +27,7 @@ iso4 = "^0.0.2"
 seaborn = "^0.13.0"
 matplotlib = "^3.8.0"
 black = "^25.1.0"
+isort = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]

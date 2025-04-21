@@ -1,4 +1,5 @@
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
+
 from pandas import DataFrame
 from pydantic import BaseModel
 from pydantic.fields import Field

@@ -1,6 +1,7 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import List, Literal, Optional, Union
+
+from pydantic import BaseModel
 
 
 class NumericalFilter(BaseModel):

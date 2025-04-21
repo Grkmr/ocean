@@ -1,9 +1,9 @@
 from typing import Any, Dict, List, Literal, Optional, Tuple
-from fastapi import APIRouter
-from fastapi import Query
+
+import pm4py
+from fastapi import APIRouter, Query
 from fastapi.exceptions import HTTPException
 from pandas.core.frame import DataFrame
-import pm4py
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 
@@ -27,7 +27,6 @@ from editor.util.edit.objects import upsert_objects
 from editor.util.filter.events import apply_event_filter
 from editor.util.filter.objects import apply_object_filter
 from editor.util.overview import OCELSummary, get_ocel_information
-
 
 router = APIRouter(prefix="/editor", tags=["editor"])
 

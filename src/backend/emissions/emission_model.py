@@ -7,17 +7,18 @@ from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 import pandas as pd
+from cachetools import LRUCache
+from pydantic import Field, computed_field, model_validator
+
 import util.pandas as pd_util
 from api.logger import logger
 from api.model.base import ApiBaseModel, NumberStats
 from api.model.ocean_units import KG_CO2E, Unit
 from api.model.with_ocel import ModelWithOcel
 from api.task_base import Task
-from cachetools import LRUCache
 from emissions.allocation import Allocator
 from emissions.rules.emission_rule import EmissionRule
 from ocel.attribute import AttributeDefinition
-from pydantic import Field, computed_field, model_validator
 from units.pint import PintUnit, UnitMismatchError, is_weight, ureg
 from util.cache import instance_lru_cache
 from util.misc import indent

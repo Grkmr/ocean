@@ -9,7 +9,7 @@ from pydantic import Field
 
 from api.config import config
 from api.model.base import ApiBaseModel
-from units.pint import PintQuantity, PintUnit, UnitMismatchError, ureg, UNITS_DIR
+from units.pint import UNITS_DIR, PintQuantity, PintUnit, UnitMismatchError, ureg
 
 ClimatiqQuantity = dict[str, str | float]
 

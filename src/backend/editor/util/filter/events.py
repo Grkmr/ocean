@@ -1,10 +1,12 @@
 from datetime import datetime
+from typing import List, Literal, Optional, Union, cast
+
+import pandas as pd
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 from pm4py import OCEL
 from pydantic import BaseModel
-import pandas as pd
-from typing import List, Literal, Optional, Union, cast
+
 from editor.model.filter import EventFilter, Filter, NumericalFilter
 
 

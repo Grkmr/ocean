@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional
+
 from pydantic.main import BaseModel
 
 from editor.model.filter import ObjectFilter

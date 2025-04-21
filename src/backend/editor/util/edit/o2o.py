@@ -1,6 +1,8 @@
 from typing import List
+
 import pandas as pd
 from pm4py import OCEL
+
 from editor.model.edit import O2ORule
 from editor.model.filter import ObjectFilter
 from editor.util.filter.objects import apply_object_filter

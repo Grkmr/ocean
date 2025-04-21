@@ -1,4 +1,5 @@
 from typing import List, Literal, Tuple
+
 from pandas.core.frame import DataFrame
 from pm4py.objects.ocel.obj import OCEL
 

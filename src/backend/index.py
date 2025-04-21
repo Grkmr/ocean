@@ -1,22 +1,24 @@
 from __future__ import annotations
 
-from api.logger import logger
-
 import datetime
 import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Literal
 
+import pandas as pd
+from fastapi import FastAPI, File, Header, Query, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import Field, ValidationError, model_validator
+
 import emissions.allocation_graph as ag
 import emissions.allocation_rules as ar
-import pandas as pd
-from routes import editor
 import visualization.ocpn as viz_ocpn
 from api.config import OceanConfig, config
 from api.dependencies import ApiObjectType, ApiObjectTypes, ApiOcel, ApiSession, ApiTask
 from api.docs import init_custom_docs
 from api.exceptions import BadRequest, NotFound, Unauthorized
+from api.logger import logger
 from api.middleware import ocel_access_middleware
 from api.model.app_state import AppState, ObjectAllocationConfig
 from api.model.base import RequestBody, SerializableSeries
@@ -45,8 +47,6 @@ from emissions.emission_model import EMISSIONS_KG_NAME, EMISSIONS_NAME, Emission
 from emissions.factors.emission_factor import LocalEmissionFactor
 from emissions.rules.e2o_emission_rule import E2OEmissionRule
 from emissions.rules.event_emission_rule import EventEmissionRule
-from fastapi import FastAPI, File, Header, Query, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
 from ocel.attribute import (
     AttributeDefinition,
     EventAttributeDefinition,
@@ -61,7 +61,7 @@ from ocel.default_ocel import (
     load_default_ocels,
 )
 from ocel.ocel_wrapper import OCELWrapper
-from pydantic import Field, ValidationError, model_validator
+from routes import editor
 from units.climatiq import ClimatiqUnitType
 from units.pint import UnitMismatchError, is_weight, ureg
 from util.misc import export_example_settings_as_dotenv, pluralize, set_str

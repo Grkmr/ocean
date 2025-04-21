@@ -1,8 +1,10 @@
 from typing import List, Optional, cast
+
+import pandas as pd
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 from pm4py.objects.ocel.obj import OCEL
-import pandas as pd
+
 from editor.model.filter import Filter, ObjectFilter
 
 

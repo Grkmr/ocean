@@ -1,16 +1,17 @@
-from pm4py import OCEL
-import pm4py
-from pydantic import BaseModel
 from typing import List, cast
+
 import pandas as pd
+import pm4py
+from pm4py import OCEL
+from pydantic import BaseModel
 
 from editor.model.api import (
     NominalAttribute,
     NumericalAttribute,
-    OCELActivityCount,
-    OCELSummary,
     ObjectAttributeSummary,
     ObjectTypeSummary,
+    OCELActivityCount,
+    OCELSummary,
     RelationCountSummary,
 )
 
