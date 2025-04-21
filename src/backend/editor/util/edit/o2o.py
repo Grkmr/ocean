@@ -55,9 +55,9 @@ def apply_o2o_rule(ocel: OCEL, rule: O2ORule) -> List[dict]:
     else:
         source_objs["_tmp_key"] = 1
         target_objs["_tmp_key"] = 1
-        merged = source_objs.merge(
-            target_objs, on="_tmp_key", suffixes=("_src", "_tgt")
-        ).drop(columns="_tmp_key")
+        merged = source_objs.merge(target_objs, on="_tmp_key", suffixes=("_src", "_tgt")).drop(
+            columns="_tmp_key"
+        )
 
     if merged.empty:
         return []

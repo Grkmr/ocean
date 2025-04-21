@@ -35,7 +35,6 @@ from util.types import PathLike
 # from sklearn.cluster import KMeans
 
 
-
 class OCELWrapper:
 
     def __init__(self, ocel: OCEL):
@@ -1171,7 +1170,7 @@ class OCELWrapper:
                 pm4py_ocel = pm4py.read.read_ocel2_sqlite(str(path))
             except Exception as err:
                 if err.args == ("File does not exist",):
-                    raise FileNotFoundError(f"File \"{path}\" does not exist")
+                    raise FileNotFoundError(f'File "{path}" does not exist')
                 else:
                     raise err
 

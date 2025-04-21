@@ -25,9 +25,7 @@ def filter_mask_by_object_attributes(ocel: OCEL, filters: List[Filter]) -> Serie
                     object_mask &= col == filter_object.value
 
         elif filter_object.type == "nominal":
-            object_mask &= ocel.objects[filter_object.field_name].isin(
-                filter_object.value
-            )
+            object_mask &= ocel.objects[filter_object.field_name].isin(filter_object.value)
 
     return object_mask
 

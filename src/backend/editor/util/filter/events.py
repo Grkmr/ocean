@@ -20,17 +20,11 @@ def filter_by_object_count(ocel: OCEL, filter_array: list[NumericalFilter]):
         if filter_object.field_name in type_counts.columns:
             match filter_object.filter:
                 case "lt":
-                    event_mask &= (
-                        type_counts[filter_object.field_name] <= filter_object.value
-                    )
+                    event_mask &= type_counts[filter_object.field_name] <= filter_object.value
                 case "gt":
-                    event_mask &= (
-                        type_counts[filter_object.field_name] >= filter_object.value
-                    )
+                    event_mask &= type_counts[filter_object.field_name] >= filter_object.value
                 case "eq":
-                    event_mask &= (
-                        type_counts[filter_object.field_name] == filter_object.value
-                    )
+                    event_mask &= type_counts[filter_object.field_name] == filter_object.value
         else:
             event_mask &= False
 
@@ -48,17 +42,11 @@ def filter_by_object_attributes_values(ocel: OCEL, filter_array: list[Filter]):
         if filter_object.type == "numerical":
             match filter_object.filter:
                 case "gt":
-                    object_mask &= (
-                        objects[filter_object.field_name] >= filter_object.value
-                    )
+                    object_mask &= objects[filter_object.field_name] >= filter_object.value
                 case "lt":
-                    object_mask &= (
-                        objects[filter_object.field_name] <= filter_object.value
-                    )
+                    object_mask &= objects[filter_object.field_name] <= filter_object.value
                 case "eq":
-                    object_mask &= (
-                        objects[filter_object.field_name] == filter_object.value
-                    )
+                    object_mask &= objects[filter_object.field_name] == filter_object.value
 
         if filter_object.type == "nominal":
             object_mask &= objects[filter_object.field_name].isin(filter_object.value)
@@ -67,9 +55,7 @@ def filter_by_object_attributes_values(ocel: OCEL, filter_array: list[Filter]):
             objects.loc[object_mask, ocel.object_id_column]
         )
 
-    grouped_any = relations.groupby(ocel.event_id_column)[
-        list(range(len(filter_array)))
-    ].any()
+    grouped_any = relations.groupby(ocel.event_id_column)[list(range(len(filter_array)))].any()
 
     # TODO Fix this
     passes_all_filters: pd.Series = grouped_any.all(axis=1)  # type: ignore
@@ -95,9 +81,7 @@ def filter_mask_by_event_attributes(ocel: OCEL, filters: List[Filter]):
                     event_mask &= col == filter_object.value
 
         if filter_object.type == "nominal":
-            event_mask &= ocel.events[filter_object.field_name].isin(
-                filter_object.value
-            )
+            event_mask &= ocel.events[filter_object.field_name].isin(filter_object.value)
     return event_mask
 
 

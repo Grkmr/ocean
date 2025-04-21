@@ -60,9 +60,7 @@ def dataframe_to_model(
 
     for rec in records:
         model_data = {k: rec[k] for k in explicit_fields}
-        model_data["metadata"] = {
-            k: v for k, v in rec.items() if k not in explicit_fields
-        }
+        model_data["metadata"] = {k: v for k, v in rec.items() if k not in explicit_fields}
 
         models.append(GeneralModel(**model_data))
 

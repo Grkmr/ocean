@@ -28,18 +28,12 @@ def upsert_attributes(
     for _, col_new in added_columns:
         if f"{col_new}_new" in merged.columns:
             if replace:
-                merged[col_new] = merged[f"{col_new}_new"].combine_first(
-                    merged[col_new]
-                )
+                merged[col_new] = merged[f"{col_new}_new"].combine_first(merged[col_new])
             else:
-                merged[col_new] = merged[col_new].combine_first(
-                    merged[f"{col_new}_new"]
-                )
+                merged[col_new] = merged[col_new].combine_first(merged[f"{col_new}_new"])
     merged = merged.drop(
         columns=[
-            f"{col_new}_new"
-            for _, col_new in added_columns
-            if f"{col_new}_new" in merged.columns
+            f"{col_new}_new" for _, col_new in added_columns if f"{col_new}_new" in merged.columns
         ]
         + [ext_col for ext_col, target_col in merge_fields if target_col != ext_col]
     )

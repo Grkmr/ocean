@@ -15,17 +15,13 @@ from editor.model.api import (
 )
 
 
-def summarize_object_attributes(
-    ocel: OCEL, max_unique: int = 100
-) -> List[ObjectTypeSummary]:
+def summarize_object_attributes(ocel: OCEL, max_unique: int = 100) -> List[ObjectTypeSummary]:
     obj_type_col = ocel.object_type_column
 
     # Get valid attributes per dataset
     attribute_names = pm4py.ocel_get_attribute_names(ocel)
     object_cols = [col for col in attribute_names if col in ocel.objects.columns]
-    object_changes_cols = [
-        col for col in attribute_names if col in ocel.object_changes.columns
-    ]
+    object_changes_cols = [col for col in attribute_names if col in ocel.object_changes.columns]
 
     # Melt and merge metadata
     def melt_df(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
@@ -89,18 +85,14 @@ def get_ocel_relation_metadata(ocel: pm4py.OCEL) -> List[RelationCountSummary]:
     event_id_col = ocel.event_id_column
 
     grouped_relations = (
-        ocel.relations.groupby(
-            [event_id_col, qualifier_col, activity_col, object_type_col]
-        )
+        ocel.relations.groupby([event_id_col, qualifier_col, activity_col, object_type_col])
         .size()
         .reset_index()
         .rename(columns={0: "count"})
     )
 
     summary: pd.DataFrame = (
-        grouped_relations.groupby([qualifier_col, activity_col, object_type_col])[
-            "count"
-        ]
+        grouped_relations.groupby([qualifier_col, activity_col, object_type_col])["count"]
         .agg(["min", "max"])
         .reset_index()
         .rename(columns={"min": "min_count", "max": "max_count"})

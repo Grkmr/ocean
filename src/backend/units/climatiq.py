@@ -171,7 +171,9 @@ class ClimatiqUnitType(ApiBaseModel):
 
 ClimatiqUnitType._UNIT_TYPES = {
     d["unit_type"]: ClimatiqUnitType(**d)
-    for d in json.load(open(UNITS_DIR / "climatiq_unit_types.json", "r", encoding="utf8"))["unit_types"]
+    for d in json.load(open(UNITS_DIR / "climatiq_unit_types.json", "r", encoding="utf8"))[
+        "unit_types"
+    ]
 }
 
 # NOTE .to_base_units() raises a DimensionalityError for units just made from "Byte". Probably an issue with overriding an existing unit's dimension (Money does not have that problem)

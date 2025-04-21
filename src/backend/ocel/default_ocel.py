@@ -108,7 +108,7 @@ def filter_default_ocels(
         filtered = [d for d in filtered if not d.hide]
     if only_preloaded:
         filtered = [d for d in filtered if d.preload]
-    
+
     if only_latest_versions:
         by_key = {}
         for default_ocel in filtered:

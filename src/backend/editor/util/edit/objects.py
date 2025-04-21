@@ -18,9 +18,7 @@ def upsert_objects(
         object_table[object_fields[1]] = object_fields[1]
 
     # Select and rename columns
-    object_table = object_table[
-        [x[0] for x in added_attributes] + list(object_fields)
-    ].rename(
+    object_table = object_table[[x[0] for x in added_attributes] + list(object_fields)].rename(
         columns=dict(
             added_attributes
             + [
@@ -46,13 +44,9 @@ def upsert_objects(
         seen_cols.add(col_new)
         if f"{col_new}_new" in merged.columns:
             if replace:
-                merged[col_new] = merged[f"{col_new}_new"].combine_first(
-                    merged[col_new]
-                )
+                merged[col_new] = merged[f"{col_new}_new"].combine_first(merged[col_new])
             else:
-                merged[col_new] = merged[col_new].combine_first(
-                    merged[f"{col_new}_new"]
-                )
+                merged[col_new] = merged[col_new].combine_first(merged[f"{col_new}_new"])
 
     # Drop temporary _new columns
     merged = merged.drop(

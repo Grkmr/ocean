@@ -41,8 +41,6 @@ def distribute(
 
     merged["weight"] = merged[ocel.event_activity].map(weights or {}).fillna(1)
     merged["total_weight"] = merged.groupby(timestamp_field)["weight"].transform("sum")
-    merged["distributed_value"] = merged[value_field] * (
-        merged["weight"] / merged["total_weight"]
-    )
+    merged["distributed_value"] = merged[value_field] * (merged["weight"] / merged["total_weight"])
 
     return merged.set_index(ocel.event_id_column)[["distributed_value"]]

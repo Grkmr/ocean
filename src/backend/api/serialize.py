@@ -50,8 +50,7 @@ def ocel_to_api(
             activities=set(ocel.activities),
             activity_counts=ocel.activity_counts.to_dict(),
             e2o_counts={
-                act: ocel.type_relation_frequencies.xs(act).to_dict()
-                for act in ocel.activities
+                act: ocel.type_relation_frequencies.xs(act).to_dict() for act in ocel.activities
             },
             e2o_qualifier_counts=series_to_nested_dict(
                 ocel.qualifier_frequencies.set_index(
@@ -82,9 +81,7 @@ def objects_to_api(
     Only includes the attribute values that are contained in the DataFrame.
     Dynamic (time-variant) attributes are not added. (To include them, first process object_changes at a specified point in time.)
     """
-    attrs = [
-        col for col in list(objects.columns) if col not in ["ocel:oid", "ocel:type"]
-    ]
+    attrs = [col for col in list(objects.columns) if col not in ["ocel:oid", "ocel:type"]]
     if not include_empty_attrs:
         attrs = [attr for attr in attrs if not objects[attr].isna().all()]
 
@@ -114,9 +111,7 @@ def objects_to_api(
 
         relations = {
             str(ocel_id): {
-                str(qualifier): [str(oid) for oid in val]
-                if isinstance(val, list)
-                else []
+                str(qualifier): [str(oid) for oid in val] if isinstance(val, list) else []
                 for qualifier, val in row.items()
             }
             for ocel_id, row in grouped.iterrows()
@@ -168,11 +163,7 @@ def events_to_api(
             events["attr"] = event_attr_values.to_dict("records")
         else:
             events["attr"] = [
-                {
-                    k: v
-                    for j, (k, v) in enumerate(row.items())
-                    if event_attr_values_notna.iloc[i, j]
-                }
+                {k: v for j, (k, v) in enumerate(row.items()) if event_attr_values_notna.iloc[i, j]}
                 for i, row in enumerate(event_attr_values.to_dict("records"))
             ]
 

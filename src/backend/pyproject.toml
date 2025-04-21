@@ -26,6 +26,7 @@ dependentspy = {git = "https://github.com/raihensen/dependentspy", branch = "mai
 iso4 = "^0.0.2"
 seaborn = "^0.13.0"
 matplotlib = "^3.8.0"
+black = "^25.1.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -33,7 +34,18 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
-exclude = ".*\\.ipynb"
+exclude = '''
+/(
+    \.venv|
+    venv|
+    env|
+    \.mypy_cache|
+    \.pytest_cache|
+    build|
+    dist|
+    .*\.ipynb
+)/
+'''
 
 [tool.pyright]
 exclude = ["drafts", "data"]

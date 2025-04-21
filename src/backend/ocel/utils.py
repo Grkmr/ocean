@@ -275,9 +275,7 @@ def join_current_attr_values(
                     renamer = {
                         ea.name: name
                         for (_, _, ea), name in disambiguate_names
-                        if ea.name in act_eattrs
-                        and ea.target == "event"
-                        and ea.activity == act
+                        if ea.name in act_eattrs and ea.target == "event" and ea.activity == act
                     }
                 assert renamer
                 act_relations.append(
