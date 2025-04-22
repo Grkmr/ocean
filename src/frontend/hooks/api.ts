@@ -141,6 +141,7 @@ export const useApplyO2ORule = () => {
 		},
 	});
 };
+
 export const useDistributeValue = () => {
 	return useMutationWithSession<
 		DistributeValueEndpointEditorOcelDistributeValuePostResponse,
@@ -152,5 +153,15 @@ export const useDistributeValue = () => {
 				requestBody: variables,
 			});
 		},
+	});
+};
+
+export const useObjectGraph = () => {
+	return useQueryWithSession({
+		queryKey: ["objectGraph"],
+		queryFn: (data) =>
+			Api.objectsRelationsOverviewObjectGraphPost({
+				...data,
+			}),
 	});
 };

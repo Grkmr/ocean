@@ -37,7 +37,9 @@ class QueryParams(BaseModel):
     sort_by: Optional[str] = None
 
 
-@router.post("/events", summary="Filtered Events", response_model=PaginatedResponse[OcelEvent])
+@router.post(
+    "/events", summary="Filtered Events", response_model=PaginatedResponse[OcelEvent]
+)
 def events(
     session: ApiSession,
     filter: EventFilter,
@@ -54,7 +56,9 @@ def events(
         page,
         size,
         None,
-        lambda df: events_to_api(df, include_empty_attrs=True, include_empty_values=True),
+        lambda df: events_to_api(
+            df, include_empty_attrs=True, include_empty_values=True
+        ),
     )
     paginated_events.data
 
@@ -65,7 +69,9 @@ def events(
     )
 
 
-@router.post("/objects", summary="Filtered Events", response_model=PaginatedResponse[OcelObject])
+@router.post(
+    "/objects", summary="Filtered Events", response_model=PaginatedResponse[OcelObject]
+)
 def objects(
     session: ApiSession,
     filter: ObjectFilter,
@@ -102,7 +108,7 @@ def objects(
 
 @router.post("/info", summary="Filtered Events", response_model=OCELSummary)
 def info(session: ApiSession, filter: EventFilter) -> OCELSummary:
-    return get_ocel_information(session.ocel.ocel)
+    return get_ocel_information(session.ocel)
 
 
 class UpsertAttributesRequest(BaseModel):
@@ -118,7 +124,7 @@ def upsert_attributes_endpoint(req: UpsertAttributesRequest, ocel: ApiOcel):
     ext_table = DataFrame(req.ext_table)
 
     upsert_attributes(
-        ocel=ocel.ocel,
+        ocel=ocel,
         extentsion_table=ext_table,
         table=req.table,
         merge_fields=req.merge_fields,
@@ -130,8 +136,12 @@ def upsert_attributes_endpoint(req: UpsertAttributesRequest, ocel: ApiOcel):
 
 
 class UpsertObjectsRequest(BaseModel):
-    ext_table: List[Dict[str, Any]] = Field(..., description="List of object rows as dicts")
-    object_fields: Tuple[str, str] = Field(..., description="Tuple of (oid column, otype column)")
+    ext_table: List[Dict[str, Any]] = Field(
+        ..., description="List of object rows as dicts"
+    )
+    object_fields: Tuple[str, str] = Field(
+        ..., description="Tuple of (oid column, otype column)"
+    )
     added_attributes: List[Tuple[str, str]] = Field(
         ..., description="List of (CSV column, OCEL attribute)"
     )

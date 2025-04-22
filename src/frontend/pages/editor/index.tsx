@@ -1,5 +1,5 @@
 import EditorFilterForm from "@/components/editor/EventFilterForm";
-import { usePaginatedEvents } from "@/hooks/api";
+import { useObjectGraph, usePaginatedEvents } from "@/hooks/api";
 import { useOceanStore } from "@/src/zustand";
 import { Button } from "react-bootstrap";
 import { PageProps } from "../_app";
@@ -10,10 +10,12 @@ import Tabs from "react-bootstrap/Tabs";
 import UpsertObjectsForm from "@/components/editor/UpsertObjectsForm";
 import { O2ORuleForm } from "@/components/editor/AddO2OForm";
 import { DistributeValueForm } from "@/components/editor/DistributeValueForm";
+import ObjectGraph from "@/components/editor/Graphs/ObjectGraph";
 
 const EditorPage: React.FC<PageProps> = ({ apiWrapper }) => {
 	return (
 		<>
+			<ObjectGraph />
 			<Tabs defaultActiveKey="attributes">
 				<Tab eventKey="attributes" title="Add Attributes">
 					<AttributeUpsertForm />

@@ -3,6 +3,8 @@ from typing import Generic, List, Literal, TypeVar, Union
 
 from pydantic.main import BaseModel
 
+from ocel.attribute import AttributeDefinition, OCELAttribute
+
 T = TypeVar("T")
 
 
@@ -27,12 +29,12 @@ class NominalAttribute(BaseModel):
     num_unique: int
 
 
-ObjectAttributeSummary = Union[NumericalAttribute, NominalAttribute]
+AttributeSummary = Union[NumericalAttribute, NominalAttribute]
 
 
 class ObjectTypeSummary(BaseModel):
     object_type: str
-    attributes: List[ObjectAttributeSummary]
+    attributes: List[AttributeSummary]
 
 
 class OCELActivityCount(BaseModel):
@@ -48,9 +50,17 @@ class RelationCountSummary(BaseModel):
     max_count: int
 
 
+class O2ORelation(BaseModel):
+    src: str
+    target: str
+    qualifier: str
+    freq: int
+
+
 class OCELSummary(BaseModel):
     start_timestamp: datetime
     end_timestamp: datetime
     activities: List[OCELActivityCount]
     object_summaries: List[ObjectTypeSummary]
+    event_summaries: dict[str, List[AttributeSummary]]
     relation_summaries: List[RelationCountSummary]

@@ -14,6 +14,8 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { PageProps } from "../_app";
 import { Button } from "react-bootstrap";
+import ParentForm from "@/components/editor/Filters/TestForm";
+import EventFilterForm from "@/components/editor/Filters/EventFilterForm";
 
 const EventOverview: React.FC<PageProps> = ({ apiWrapper }) => {
 	const [view, setView] = useState<"events" | "objects">("events");
@@ -33,6 +35,7 @@ const EventOverview: React.FC<PageProps> = ({ apiWrapper }) => {
 	const { handlePageChange } = usePagination();
 	return (
 		<>
+			<EventFilterForm />
 			<Tabs
 				id="controlled-tab-example"
 				activeKey={view}
