@@ -15,7 +15,6 @@ import ObjectGraph from "@/components/editor/Graphs/ObjectGraph";
 const EditorPage: React.FC<PageProps> = ({ apiWrapper }) => {
 	return (
 		<>
-			<ObjectGraph />
 			<Tabs defaultActiveKey="attributes">
 				<Tab eventKey="attributes" title="Add Attributes">
 					<AttributeUpsertForm />
@@ -26,7 +25,6 @@ const EditorPage: React.FC<PageProps> = ({ apiWrapper }) => {
 				<Tab eventKey="o2o" title="Add O2O relations">
 					<O2ORuleForm />
 				</Tab>
-
 				<Tab eventKey="distribute" title="Distribute Values">
 					<DistributeValueForm />
 				</Tab>

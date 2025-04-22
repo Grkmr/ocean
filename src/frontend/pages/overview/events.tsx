@@ -6,87 +6,65 @@ import {
 	usePaginatedObjects,
 } from "@/hooks/api";
 import usePagination from "@/hooks/usePagination";
-import { EventFilter } from "@/src/api/generated";
-import { Api } from "@/src/openapi";
-import { useOceanStore } from "@/src/zustand";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { PageProps } from "../_app";
-import { Button } from "react-bootstrap";
-import ParentForm from "@/components/editor/Filters/TestForm";
-import EventFilterForm from "@/components/editor/Filters/EventFilterForm";
+import { useRouter } from "next/router";
+import { Stack } from "react-bootstrap";
 
-const EventOverview: React.FC<PageProps> = ({ apiWrapper }) => {
-	const [view, setView] = useState<"events" | "objects">("events");
+const ObjectOverview: React.FC = () => {
 	const [viewTab, setViewTab] = useState<string>();
-	const { data: info } = useOcelInfo({ filter: { event_attributes: null } });
+	const router = useRouter();
+	const { data: info } = useOcelInfo({ filter: {} });
 	const { data: events } = usePaginatedEvents({
 		filter: {
-			event_attributes: null,
-			...(view === "events" && viewTab && { activity_names: [viewTab] }),
+			...(viewTab && { activity_names: [viewTab] }),
 		},
 	});
-	const { data: objects } = usePaginatedObjects({
-		filter: {
-			...(view === "objects" && viewTab && { object_types: [viewTab] }),
-		},
-	});
+
+	const eventTypes = useMemo(
+		() => info?.activities.map(({ activity }) => activity) ?? [],
+		[info?.event_summaries],
+	);
+
 	const { handlePageChange } = usePagination();
 	return (
 		<>
-			<EventFilterForm />
 			<Tabs
 				id="controlled-tab-example"
-				activeKey={view}
-				onSelect={(k) => setView(k)}
+				activeKey={"events"}
+				onSelect={(newTab) => {
+					if (newTab === "objects") {
+						router.push("objects");
+					}
+				}}
 				className="mb-3"
 			>
 				<Tab eventKey="events" title="Events" />
 				<Tab eventKey="objects" title="Objects" />
 			</Tabs>
-			{((view === "events" && events) || (view === "objects" && objects)) &&
-				info && (
-					<>
-						{view === "events" ? (
-							<>
-								<Tabs
-									activeKey={viewTab ?? info.activities[0].activity!}
-									onSelect={(k) => {
-										setViewTab(k);
-										handlePageChange(1);
-									}}
-									className="mb-3"
-								>
-									{info.activities.map(({ activity }) => (
-										<Tab eventKey={activity} title={activity} />
-									))}
-								</Tabs>
-								<GenericTable type={"event"} table={events!.data} />
-								<Pagination totalPages={events!.totalPages} />
-							</>
-						) : (
-							<>
-								<Tabs
-									activeKey={viewTab ?? info.object_summaries[0].object_type!}
-									onSelect={(k) => {
-										setViewTab(k);
-										handlePageChange(1);
-									}}
-									className="mb-3"
-								>
-									{info.object_summaries.map(({ object_type }) => (
-										<Tab eventKey={object_type} title={object_type} />
-									))}
-								</Tabs>
-								<GenericTable type={"object"} table={objects!.data} />
-								<Pagination totalPages={objects!.totalPages} />
-							</>
-						)}
-					</>
-				)}
+			{info && events && (
+				<Stack gap={3}>
+					<Tabs
+						activeKey={viewTab ?? Object.keys(info.event_summaries)[0]}
+						onSelect={(newEventType) => {
+							if (newEventType != null && eventTypes.includes(newEventType)) {
+								setViewTab(newEventType);
+								handlePageChange(1);
+							}
+						}}
+						className="mb-3"
+					>
+						{eventTypes.map((eventType) => (
+							<Tab eventKey={eventType} title={eventType} />
+						))}
+					</Tabs>
+					<GenericTable type={"event"} table={events!.data} />
+					<Pagination totalPages={events!.totalPages} />
+				</Stack>
+			)}
 		</>
 	);
 };
 
-export default EventOverview;
+export default ObjectOverview;

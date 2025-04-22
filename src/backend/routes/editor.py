@@ -124,7 +124,7 @@ def upsert_attributes_endpoint(req: UpsertAttributesRequest, ocel: ApiOcel):
     ext_table = DataFrame(req.ext_table)
 
     upsert_attributes(
-        ocel=ocel,
+        ocel=ocel.ocel,
         extentsion_table=ext_table,
         table=req.table,
         merge_fields=req.merge_fields,
@@ -132,6 +132,7 @@ def upsert_attributes_endpoint(req: UpsertAttributesRequest, ocel: ApiOcel):
         replace=req.replace,
     )
 
+    ocel.revalidate()
     return {"status": "success"}
 
 
@@ -160,7 +161,7 @@ def upsert_objects_endpoint(req: UpsertObjectsRequest, ocel: ApiOcel):
         replace=req.replace,
     )
 
-    print(ocel.ocel.objects)
+    ocel.revalidate()
 
     return {"status": "success"}
 

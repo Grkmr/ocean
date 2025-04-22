@@ -8,6 +8,11 @@ import "@xyflow/react/dist/style.css";
 const nodeWidth = 200;
 const nodeHeight = 100;
 
+const getGraphHeight = (nodes: XYNode[]) => {
+	const bottom = Math.max(...nodes.map((n) => n.position.y + nodeHeight));
+	return bottom + 100; // padding
+};
+
 const createLayoutedGraph = (
 	data: ObjectsRelationsOverviewObjectGraphPostResponse,
 ): {
@@ -112,15 +117,27 @@ const createLayoutedGraph = (
 
 	dagre.layout(dagreGraph);
 
-	nodes.forEach((node) => {
+	const layouted = nodes.map((node) => {
 		const pos = dagreGraph.node(node.id);
-		if (pos) {
-			node.position = {
+		return {
+			...node,
+			position: {
 				x: pos.x - nodeWidth / 2,
 				y: pos.y - nodeHeight / 2,
-			};
-		}
+			},
+		};
 	});
+
+	const minX = Math.min(...layouted.map((n) => n.position.x));
+	const minY = Math.min(...layouted.map((n) => n.position.y));
+
+	layouted.forEach((node) => {
+		node.position.x -= minX;
+		node.position.y -= minY;
+	});
+
+	nodes.length = 0;
+	nodes.push(...layouted);
 
 	return { nodes, edges };
 };
@@ -129,17 +146,19 @@ const ObjectGraph: React.FC = () => {
 	const { data } = useObjectGraph();
 	const [nodes, setNodes] = useState<XYNode[]>([]);
 	const [edges, setEdges] = useState<Edge[]>([]);
+	const [graphHeight, setGraphHeight] = useState(0);
 
 	useEffect(() => {
 		if (data) {
 			const { nodes, edges } = createLayoutedGraph(data);
 			setNodes(nodes);
 			setEdges(edges);
+			setGraphHeight(getGraphHeight(nodes));
 		}
 	}, [data]);
 
 	return (
-		<div style={{ width: "100%", height: "800px" }}>
+		<div style={{ width: "100%", height: graphHeight }}>
 			<ReactFlow
 				nodes={nodes}
 				edges={edges}
@@ -148,9 +167,11 @@ const ObjectGraph: React.FC = () => {
 				zoomOnScroll={false}
 				zoomOnPinch={false}
 				zoomOnDoubleClick={false}
+				panOnScroll={false}
 				nodesDraggable={false}
 				elementsSelectable={false}
 				proOptions={{ hideAttribution: true }}
+				preventScrolling={false}
 			/>
 		</div>
 	);

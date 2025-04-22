@@ -39,6 +39,7 @@ const GenericTable: React.FC<GenericTableProps> = ({ type, table }) => {
 			}, new Set<string>()),
 		);
 	}, [table]);
+
 	return (
 		<Table responsive={"sm"}>
 			<thead>
