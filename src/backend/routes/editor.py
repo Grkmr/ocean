@@ -49,6 +49,7 @@ def events(
 ) -> PaginatedResponse[OcelEvent]:
     ocel = session.ocel.ocel
 
+    print(filter)
     events = apply_event_filter(ocel, filter)
 
     paginated_events = paginated_dataframe(
@@ -108,7 +109,7 @@ def objects(
 
 @router.post("/info", summary="Filtered Events", response_model=OCELSummary)
 def info(session: ApiSession, filter: EventFilter) -> OCELSummary:
-    return get_ocel_information(session.ocel)
+    return get_ocel_information(session.ocel, filter)
 
 
 class UpsertAttributesRequest(BaseModel):

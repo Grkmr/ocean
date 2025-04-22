@@ -1,23 +1,26 @@
 import GenericTable from "@/components/editor/GenericTable";
 import Pagination from "@/components/editor/Pagination";
-import {
-	useOcelInfo,
-	usePaginatedEvents,
-	usePaginatedObjects,
-} from "@/hooks/api";
+import { useOcelInfo, usePaginatedEvents } from "@/hooks/api";
 import usePagination from "@/hooks/usePagination";
 import { useMemo, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { useRouter } from "next/router";
-import { Stack } from "react-bootstrap";
+import { Accordion, Stack } from "react-bootstrap";
+import EventFilterForm from "@/components/editor/Filters/EventFilterForm";
+import { EventFilter } from "@/src/api/generated";
 
 const ObjectOverview: React.FC = () => {
 	const [viewTab, setViewTab] = useState<string>();
 	const router = useRouter();
-	const { data: info } = useOcelInfo({ filter: {} });
+	const [filter, setFilter] = useState<EventFilter>({});
+	console.log(filter);
+	const { data: info } = useOcelInfo({
+		filter,
+	});
 	const { data: events } = usePaginatedEvents({
 		filter: {
+			...filter,
 			...(viewTab && { activity_names: [viewTab] }),
 		},
 	});
@@ -43,8 +46,23 @@ const ObjectOverview: React.FC = () => {
 				<Tab eventKey="events" title="Events" />
 				<Tab eventKey="objects" title="Objects" />
 			</Tabs>
-			{info && events && (
+			{info && (
 				<Stack gap={3}>
+					<Accordion defaultActiveKey="0">
+						<Accordion.Item eventKey="0">
+							<Accordion.Header>Overview</Accordion.Header>
+						</Accordion.Item>
+						<Accordion.Item eventKey="1">
+							<Accordion.Header>Filter</Accordion.Header>
+							<Accordion.Body>
+								<EventFilterForm
+									filter={filter}
+									setEventFilter={setFilter}
+									hideSections={["activity_names", "object_types"]}
+								/>
+							</Accordion.Body>
+						</Accordion.Item>
+					</Accordion>
 					<Tabs
 						activeKey={viewTab ?? Object.keys(info.event_summaries)[0]}
 						onSelect={(newEventType) => {
@@ -59,8 +77,12 @@ const ObjectOverview: React.FC = () => {
 							<Tab eventKey={eventType} title={eventType} />
 						))}
 					</Tabs>
-					<GenericTable type={"event"} table={events!.data} />
-					<Pagination totalPages={events!.totalPages} />
+					{events && (
+						<>
+							<GenericTable type={"event"} table={events!.data} />
+							<Pagination totalPages={events!.totalPages} />
+						</>
+					)}
 				</Stack>
 			)}
 		</>

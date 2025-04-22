@@ -1,7 +1,6 @@
 import React from "react";
 import { useFormContext, useFieldArray, Controller } from "react-hook-form";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { EventFilter } from "@/src/api/generated";
 
 // Attribute and Filter Types
 export type NominalAttribute = {
@@ -10,43 +9,26 @@ export type NominalAttribute = {
 	sample_values: Array<string | number>;
 };
 
-export type NumericAttribute = {
+export type NumericalAttribute = {
 	attribute: string;
-	type: "numeric";
+	type: "numerical";
 };
 
-export type Attribute = NominalAttribute | NumericAttribute;
+export type Attribute = NominalAttribute | NumericalAttribute;
 
-export type NominalFilter = {
-	type: "nominal";
-	field_name: string;
-	value: Array<string>;
-};
-
-export type NumericFilter = {
-	type: "numeric";
-	field_name: string;
-	operator: "==" | "<=" | ">=";
-	value: number;
-};
-
-export type Filter = NominalFilter | NumericFilter;
-
-type Props = {
+export type AttributeFilterSectionProps = {
+	name: string;
 	attributes: Attribute[];
+	onlyNumeric?: boolean;
 };
+
 const AttributeFilterSection = ({
 	name,
 	attributes,
 	onlyNumeric,
-}: {
-	name: keyof EventFilter;
-	attributes: Attribute[];
-	onlyNumeric?: boolean;
-}) => {
+}: AttributeFilterSectionProps) => {
 	const { control, register, watch } = useFormContext();
 	const { fields, append, remove } = useFieldArray({ control, name });
-
 	const watched = watch(name) || [];
 
 	const getAttr = (fieldName?: string) =>
@@ -57,8 +39,7 @@ const AttributeFilterSection = ({
 			{fields.map((field, index) => {
 				const selected = watched[index]?.field_name;
 				const attr = getAttr(selected);
-
-				const isNumeric = attr?.type === "numeric";
+				const isNumerical = attr?.type === "numerical";
 
 				return (
 					<div key={field.id} className="border p-3 mb-2 rounded">
@@ -71,7 +52,7 @@ const AttributeFilterSection = ({
 									>
 										<option value="">Select...</option>
 										{attributes
-											.filter((a) => !onlyNumeric || a.type === "numeric")
+											.filter((a) => !onlyNumeric || a.type === "numerical")
 											.map((a) => (
 												<option key={a.attribute} value={a.attribute}>
 													{a.attribute}
@@ -81,17 +62,26 @@ const AttributeFilterSection = ({
 								</Form.Group>
 							</Col>
 
-							{isNumeric && (
+							{/* Inject `type` as hidden input */}
+							<input
+								type="hidden"
+								{...register(`${name}.${index}.type` as const)}
+								value={
+									attr?.type === "numerical" ? "numerical" : attr?.type || ""
+								}
+							/>
+
+							{isNumerical && (
 								<>
 									<Col md={2}>
 										<Form.Group>
-											<Form.Label>Operator</Form.Label>
+											<Form.Label>Filter</Form.Label>
 											<Form.Select
-												{...register(`${name}.${index}.operator` as const)}
+												{...register(`${name}.${index}.filter` as const)}
 											>
-												<option value="==">==</option>
-												<option value="<=">{"<="}</option>
-												<option value=">=">{">="}</option>
+												<option value="eq">==</option>
+												<option value="lt">{"<="}</option>
+												<option value="gt">{">="}</option>
 											</Form.Select>
 										</Form.Group>
 									</Col>
@@ -158,7 +148,14 @@ const AttributeFilterSection = ({
 			<Button
 				variant="secondary"
 				type="button"
-				onClick={() => append({ field_name: "" })}
+				onClick={() =>
+					append({
+						field_name: "",
+						type: onlyNumeric ? "numerical" : "nominal",
+						filter: "eq",
+						value: onlyNumeric ? 0 : [],
+					})
+				}
 				className="mb-3"
 			>
 				+ Add Filter

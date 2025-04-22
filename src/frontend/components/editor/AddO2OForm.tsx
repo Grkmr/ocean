@@ -81,7 +81,9 @@ export const O2ORuleForm = () => {
 				<Form.Group className="mb-3">
 					<Form.Label>Source Type</Form.Label>
 					<Form.Select {...register("sourceType")} required>
-						<option value="">Select Source Type</option>
+						<option value="" hidden>
+							Select Source Type
+						</option>
 						{ocelInfo?.object_summaries.map(({ object_type }) => (
 							<option key={object_type} value={object_type}>
 								{object_type}
@@ -93,7 +95,9 @@ export const O2ORuleForm = () => {
 				<Form.Group className="mb-3">
 					<Form.Label>Target Type</Form.Label>
 					<Form.Select {...register("targetType")} required>
-						<option value="">Select Target Type</option>
+						<option value="" hidden>
+							Select Target Type
+						</option>
 						{ocelInfo?.object_summaries.map(({ object_type }) => (
 							<option key={object_type} value={object_type}>
 								{object_type}

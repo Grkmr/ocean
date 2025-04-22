@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List, Optional, cast
 
 import pandas as pd
 import pm4py
@@ -15,6 +15,8 @@ from editor.model.api import (
     OCELSummary,
     RelationCountSummary,
 )
+from editor.model.filter import EventFilter
+from editor.util.filter.events import apply_event_filter
 from ocel.attribute import AttributeDefinition
 
 
@@ -206,7 +208,9 @@ def get_ocel_relation_metadata(ocel: pm4py.OCEL) -> List[RelationCountSummary]:
     return summaries
 
 
-def get_ocel_information(api_ocel: ApiOcel) -> OCELSummary:
+def get_ocel_information(
+    api_ocel: ApiOcel, event_filter: Optional[EventFilter]
+) -> OCELSummary:
     ocel = api_ocel.ocel
     timestamp_col = ocel.event_timestamp
     timestamps = ocel.events[timestamp_col].dropna()
@@ -214,7 +218,13 @@ def get_ocel_information(api_ocel: ApiOcel) -> OCELSummary:
     start = cast(pd.Timestamp, timestamps.min())
     end = cast(pd.Timestamp, timestamps.max())
 
-    activity_counts_series = ocel.events[ocel.event_activity].value_counts()
+    if event_filter is None:
+        activity_counts_series = ocel.events[ocel.event_activity].value_counts()
+    else:
+        activity_counts_series = apply_event_filter(ocel, event_filter)[
+            ocel.event_activity
+        ].value_counts()
+
     activities = [
         OCELActivityCount(activity=str(act), count=int(count))
         for act, count in activity_counts_series.items()
